@@ -11,6 +11,8 @@ import (
 func TestWrite(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	testCases := map[string]struct {
 		in	string
 		want	string
@@ -86,12 +88,16 @@ WORKDIR /home
 func TestParseTreeToDockerfileNilNode(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	got := Write(nil)
 	if got != nil {
 		t.Errorf("Write(nil) = %#v; want nil", got)
 	}
 }
 func TestFindAll(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	instructions := `FROM scratch
@@ -113,6 +119,8 @@ ENV PATH=/bin
 func TestFindAllNilNode(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	cmd := command.From
 	got := FindAll(nil, cmd)
 	if got != nil {
@@ -120,6 +128,8 @@ func TestFindAllNilNode(t *testing.T) {
 	}
 }
 func TestInsertInstructions(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	testCases := map[string]struct {
@@ -172,12 +182,16 @@ ENV PATH=/bin
 func TestInsertInstructionsNilNode(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	err := InsertInstructions(nil, 0, "")
 	if err == nil {
 		t.Errorf("InsertInstructions: got nil; want error")
 	}
 }
 func TestInsertInstructionsPosOutOfRange(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	original := `FROM busybox
@@ -197,6 +211,8 @@ ENV PATH=/bin
 func TestInsertInstructionsUnparseable(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	original := `FROM busybox
 ENV PATH=/bin
 `
@@ -212,6 +228,8 @@ ENV PATH=/bin
 	}
 }
 func TestBaseImages(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	testCases := map[string]struct {
@@ -235,11 +253,15 @@ FROM centos:7`, want: []string{"scratch", "centos:7"}}}
 func TestBaseImagesNilNode(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if got := baseImages(nil); got != nil {
 		t.Errorf("baseImages(nil) = %#v; want nil", got)
 	}
 }
 func TestExposedPorts(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	testCases := map[string]struct {
@@ -272,11 +294,15 @@ EXPOSE 9090 9091
 func TestExposedPortsNilNode(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if got := exposedPorts(nil); got != nil {
 		t.Errorf("exposedPorts(nil) = %#v; want nil", got)
 	}
 }
 func TestNextValues(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	testCases := map[string][]string{`FROM busybox:latest`: {"busybox:latest"}, `MAINTAINER nobody@example.com`: {"nobody@example.com"}, `LABEL version=1.0`: {"version", "1.0"}, `EXPOSE 8080`: {"8080"}, `VOLUME /var/run/www`: {"/var/run/www"}, `ENV PATH=/bin`: {"PATH", "/bin"}, `ADD file /home/`: {"file", "/home/"}, `COPY dir/ /tmp/`: {"dir/", "/tmp/"}, `RUN echo "Hello world!"`: {`echo "Hello world!"`}, `ENTRYPOINT /bin/sh`: {"/bin/sh"}, `CMD ["-c", "env"]`: {"-c", "env"}, `USER 1001`: {"1001"}, `WORKDIR /home`: {"/home"}}
@@ -295,6 +321,8 @@ func TestNextValues(t *testing.T) {
 	}
 }
 func TestNextValuesOnbuild(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	testCases := map[string][]string{`ONBUILD ADD . /app/src`: {".", "/app/src"}, `ONBUILD RUN echo "Hello universe!"`: {`echo "Hello universe!"`}}
@@ -317,6 +345,8 @@ func TestNextValuesOnbuild(t *testing.T) {
 	}
 }
 func TestNextValuesNilNode(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if got := nextValues(nil); got != nil {

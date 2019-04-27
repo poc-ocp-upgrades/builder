@@ -9,6 +9,8 @@ import (
 func TestPasswordHandles(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	tests := map[string]bool{"username": true, "user": false, "token": true, "ca.crt": false, "password": true}
 	up := UsernamePassword{}
 	for k, v := range tests {
@@ -18,6 +20,8 @@ func TestPasswordHandles(t *testing.T) {
 	}
 }
 func TestPassword(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	testcases := map[string]struct {

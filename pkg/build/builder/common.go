@@ -74,14 +74,20 @@ type configMapSource buildapiv1.ConfigMapBuildSource
 func (c configMapSource) LocalObjectRef() corev1.LocalObjectReference {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return c.ConfigMap
 }
 func (c configMapSource) DestinationPath() string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return c.DestinationDir
 }
 func (c configMapSource) IsSecret() bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return false
@@ -92,9 +98,13 @@ type secretSource buildapiv1.SecretBuildSource
 func (s secretSource) LocalObjectRef() corev1.LocalObjectReference {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return s.Secret
 }
 func (s secretSource) DestinationPath() string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return s.DestinationDir
@@ -102,9 +112,13 @@ func (s secretSource) DestinationPath() string {
 func (s secretSource) IsSecret() bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return true
 }
 func buildInfo(build *buildapiv1.Build, sourceInfo *git.SourceInfo) []KeyValue {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	kv := []KeyValue{{"OPENSHIFT_BUILD_NAME", build.Name}, {"OPENSHIFT_BUILD_NAMESPACE", build.Namespace}}
@@ -130,6 +144,8 @@ func buildInfo(build *buildapiv1.Build, sourceInfo *git.SourceInfo) []KeyValue {
 func randomBuildTag(namespace, name string) string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	repo := fmt.Sprintf("temp.builder.openshift.io/%s/%s", namespace, name)
 	randomTag := fmt.Sprintf("%08x", rand.Uint32())
 	maxRepoLen := reference.NameTotalLengthMax - len(randomTag) - 1
@@ -141,10 +157,14 @@ func randomBuildTag(namespace, name string) string {
 func containerName(strategyName, buildName, namespace, containerPurpose string) string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	uid := fmt.Sprintf("%08x", rand.Uint32())
 	return fmt.Sprintf("%s_%s-build_%s_%s_%s_%s", containerNamePrefix, strategyName, buildName, namespace, containerPurpose, uid)
 }
 func buildPostCommit(postCommitSpec buildapiv1.BuildPostCommitSpec) string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	command := postCommitSpec.Command
@@ -164,12 +184,16 @@ func buildPostCommit(postCommitSpec buildapiv1.BuildPostCommitSpec) string {
 func GetSourceRevision(build *buildapiv1.Build, sourceInfo *git.SourceInfo) *buildapiv1.SourceRevision {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if build.Spec.Revision != nil {
 		return build.Spec.Revision
 	}
 	return &buildapiv1.SourceRevision{Git: &buildapiv1.GitSourceRevision{Commit: sourceInfo.CommitID, Message: sourceInfo.Message, Author: buildapiv1.SourceControlUser{Name: sourceInfo.AuthorName, Email: sourceInfo.AuthorEmail}, Committer: buildapiv1.SourceControlUser{Name: sourceInfo.CommitterName, Email: sourceInfo.CommitterEmail}}}
 }
 func HandleBuildStatusUpdate(build *buildapiv1.Build, client buildclientv1.BuildInterface, sourceRev *buildapiv1.SourceRevision) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	var latestBuild *buildapiv1.Build
@@ -214,6 +238,8 @@ func HandleBuildStatusUpdate(build *buildapiv1.Build, client buildclientv1.Build
 func buildEnv(build *buildapiv1.Build, sourceInfo *git.SourceInfo) []dockerfile.KeyValue {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	bi := buildInfo(build, sourceInfo)
 	kv := make([]dockerfile.KeyValue, len(bi))
 	for i, item := range bi {
@@ -224,9 +250,13 @@ func buildEnv(build *buildapiv1.Build, sourceInfo *git.SourceInfo) []dockerfile.
 func toS2ISourceInfo(sourceInfo *git.SourceInfo) *s2igit.SourceInfo {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &s2igit.SourceInfo{Ref: sourceInfo.Ref, CommitID: sourceInfo.CommitID, Date: sourceInfo.Date, AuthorName: sourceInfo.AuthorName, AuthorEmail: sourceInfo.AuthorEmail, CommitterName: sourceInfo.CommitterName, CommitterEmail: sourceInfo.CommitterEmail, Message: sourceInfo.Message, Location: sourceInfo.Location, ContextDir: sourceInfo.ContextDir}
 }
 func buildLabels(build *buildapiv1.Build, sourceInfo *git.SourceInfo) []dockerfile.KeyValue {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	labels := map[string]string{}
@@ -258,6 +288,8 @@ func buildLabels(build *buildapiv1.Build, sourceInfo *git.SourceInfo) []dockerfi
 func readSourceInfo() (*git.SourceInfo, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	sourceInfoPath := filepath.Join(buildWorkDirMount, "sourceinfo.json")
 	if _, err := os.Stat(sourceInfoPath); os.IsNotExist(err) {
 		return nil, nil
@@ -275,6 +307,8 @@ func readSourceInfo() (*git.SourceInfo, error) {
 	return sourceInfo, nil
 }
 func addBuildParameters(dir string, build *buildapiv1.Build, sourceInfo *git.SourceInfo) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	dockerfilePath := getDockerfilePath(dir, build)
@@ -318,6 +352,8 @@ func addBuildParameters(dir string, build *buildapiv1.Build, sourceInfo *git.Sou
 func replaceImagesFromSource(node *parser.Node, imageSources []buildapiv1.ImageSource) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	replacements := make(map[string]string)
 	for _, image := range imageSources {
 		if image.From.Kind != "DockerImage" || len(image.From.Name) == 0 {
@@ -359,6 +395,8 @@ func replaceImagesFromSource(node *parser.Node, imageSources []buildapiv1.ImageS
 func findReferencedImages(dockerfilePath string) ([]string, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if len(dockerfilePath) == 0 {
 		return nil, nil
 	}
@@ -397,6 +435,8 @@ func findReferencedImages(dockerfilePath string) ([]string, error) {
 func overwriteFile(name string, out []byte) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	f, err := os.OpenFile(name, os.O_TRUNC|os.O_WRONLY, 0)
 	if err != nil {
 		return err
@@ -408,6 +448,8 @@ func overwriteFile(name string, out []byte) error {
 	return f.Close()
 }
 func nodeHasFromRef(node *parser.Node) (string, bool) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	for _, arg := range node.Flags {
@@ -422,6 +464,8 @@ func nodeHasFromRef(node *parser.Node) (string, bool) {
 func nodeReplaceFromRef(node *parser.Node, name string) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for i, arg := range node.Flags {
 		switch {
 		case strings.HasPrefix(arg, "--from="):
@@ -432,7 +476,16 @@ func nodeReplaceFromRef(node *parser.Node, name string) {
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

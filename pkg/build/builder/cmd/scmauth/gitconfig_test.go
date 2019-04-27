@@ -8,6 +8,8 @@ import (
 func TestGitConfigHandles(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	caCert := &GitConfig{}
 	if !caCert.Handles(".gitconfig") {
 		t.Errorf("should handle .gitconfig")
@@ -20,6 +22,8 @@ func TestGitConfigHandles(t *testing.T) {
 	}
 }
 func TestGitConfigSetup(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	context := NewDefaultSCMContext()

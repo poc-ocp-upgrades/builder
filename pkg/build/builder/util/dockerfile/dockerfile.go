@@ -13,6 +13,8 @@ import (
 func Parse(r io.Reader) (*parser.Node, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	result, err := parser.Parse(r)
 	if err != nil {
 		return nil, err
@@ -20,6 +22,8 @@ func Parse(r io.Reader) (*parser.Node, error) {
 	return result.AST, nil
 }
 func Write(node *parser.Node) []byte {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if node == nil {
@@ -83,6 +87,8 @@ func Write(node *parser.Node) []byte {
 func FindAll(node *parser.Node, cmd string) []int {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if node == nil {
 		return nil
 	}
@@ -95,6 +101,8 @@ func FindAll(node *parser.Node, cmd string) []int {
 	return indices
 }
 func InsertInstructions(node *parser.Node, pos int, instructions string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if node == nil {
@@ -113,6 +121,8 @@ func InsertInstructions(node *parser.Node, pos int, instructions string) error {
 func baseImages(node *parser.Node) []string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var images []string
 	for _, pos := range FindAll(node, command.From) {
 		images = append(images, nextValues(node.Children[pos])...)
@@ -120,6 +130,8 @@ func baseImages(node *parser.Node) []string {
 	return images
 }
 func exposedPorts(node *parser.Node) [][]string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	var allPorts [][]string
@@ -136,6 +148,8 @@ func exposedPorts(node *parser.Node) [][]string {
 	return allPorts
 }
 func nextValues(node *parser.Node) []string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if node == nil {

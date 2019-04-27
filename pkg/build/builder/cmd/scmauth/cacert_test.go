@@ -9,6 +9,8 @@ import (
 func TestCACertHandles(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	caCert := &CACert{}
 	if !caCert.Handles("ca.crt") {
 		t.Errorf("should handle ca.crt")
@@ -18,6 +20,8 @@ func TestCACertHandles(t *testing.T) {
 	}
 }
 func TestCACertSetup(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	context := NewDefaultSCMContext()
@@ -33,6 +37,8 @@ func TestCACertSetup(t *testing.T) {
 	validateConfig(t, gitConfig, "sslCAInfo")
 }
 func TestCACertSetupNoSSL(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	context := NewDefaultSCMContext()

@@ -23,6 +23,8 @@ import (
 func TestInsertEnvAfterFrom(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	tests := map[string]struct {
 		original	string
 		env		[]corev1.EnvVar
@@ -65,6 +67,8 @@ RUN echo "hello world"`}}
 func TestReplaceLastFrom(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	tests := []struct {
 		original	string
 		image		string
@@ -100,6 +104,8 @@ RUN echo "hello world"
 	}
 }
 func TestAppendPostCommit(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	type want struct {
@@ -221,6 +227,8 @@ func TestAppendPostCommit(t *testing.T) {
 func TestDockerfilePath(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	tests := []struct {
 		contextDir	string
 		dockerfilePath	string
@@ -289,6 +297,8 @@ func TestDockerfilePath(t *testing.T) {
 func TestEmptySource(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	build := &buildapiv1.Build{ObjectMeta: metav1.ObjectMeta{Name: "buildid", Namespace: "default"}, Spec: buildapiv1.BuildSpec{CommonSpec: buildapiv1.CommonSpec{Source: buildapiv1.BuildSource{}, Strategy: buildapiv1.BuildStrategy{DockerStrategy: &buildapiv1.DockerBuildStrategy{}}, Output: buildapiv1.BuildOutput{To: &corev1.ObjectReference{Kind: "DockerImage", Name: "test/test-result:latest"}}}}}
 	client := buildfake.Clientset{}
 	dockerBuilder := &DockerBuilder{client: client.Build().Builds(""), build: build}
@@ -301,6 +311,8 @@ func TestEmptySource(t *testing.T) {
 	}
 }
 func TestDockerfileFromScratch(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	dockerFile := `FROM scratch

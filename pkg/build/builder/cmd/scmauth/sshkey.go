@@ -12,6 +12,8 @@ type SSHPrivateKey struct{}
 func (_ SSHPrivateKey) Setup(baseDir string, context SCMAuthContext) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	script, err := ioutil.TempFile("", "gitssh")
 	if err != nil {
 		return err
@@ -33,9 +35,13 @@ func (_ SSHPrivateKey) Setup(baseDir string, context SCMAuthContext) error {
 func (_ SSHPrivateKey) Name() string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return SSHPrivateKeyMethodName
 }
 func (_ SSHPrivateKey) Handles(name string) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return name == SSHPrivateKeyMethodName

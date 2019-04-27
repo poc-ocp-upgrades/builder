@@ -8,6 +8,8 @@ import (
 func TestContextSet(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	c := NewDefaultSCMContext()
 	err := c.Set("VAR1", "value1")
 	if err != nil {
@@ -27,6 +29,8 @@ func TestContextSet(t *testing.T) {
 func TestContextSetExisting(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	c := NewDefaultSCMContext()
 	err := c.Set("VAR1", "value1")
 	if err != nil {
@@ -44,6 +48,8 @@ func TestContextSetExisting(t *testing.T) {
 func TestSetOverrideURL(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	c := NewDefaultSCMContext()
 	u, _ := url.Parse("https://my.override.url/test/repo")
 	err := c.SetOverrideURL(u)
@@ -56,6 +62,8 @@ func TestSetOverrideURL(t *testing.T) {
 	}
 }
 func TestSetOverrideURLExisting(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	c := NewDefaultSCMContext()

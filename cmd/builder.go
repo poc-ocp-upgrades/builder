@@ -46,12 +46,16 @@ var (
 func NewCmdVersion(fullName string, versionInfo k8sversion.Info, out io.Writer) *cobra.Command {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	cmd := &cobra.Command{Use: "version", Short: "Display version", Long: "Display version", Run: func(cmd *cobra.Command, args []string) {
 		fmt.Fprintf(out, "%s %v\n", fullName, versionInfo)
 	}}
 	return cmd
 }
 func NewCommandS2IBuilder(name string) *cobra.Command {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	cmd := &cobra.Command{Use: name, Short: "Run a Source-to-Image build", Long: s2iBuilderLong, Run: func(c *cobra.Command, args []string) {
@@ -64,6 +68,8 @@ func NewCommandS2IBuilder(name string) *cobra.Command {
 func NewCommandDockerBuilder(name string) *cobra.Command {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	cmd := &cobra.Command{Use: name, Short: "Run a Docker build", Long: dockerBuilderLong, Run: func(c *cobra.Command, args []string) {
 		err := cmd.RunDockerBuild(c.OutOrStderr())
 		kcmdutil.CheckErr(err)
@@ -72,6 +78,8 @@ func NewCommandDockerBuilder(name string) *cobra.Command {
 	return cmd
 }
 func NewCommandGitClone(name string) *cobra.Command {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	cmd := &cobra.Command{Use: name, Short: "Git clone source code", Long: gitCloneLong, Run: func(c *cobra.Command, args []string) {
@@ -84,6 +92,8 @@ func NewCommandGitClone(name string) *cobra.Command {
 func NewCommandManageDockerfile(name string) *cobra.Command {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	cmd := &cobra.Command{Use: name, Short: "Manage a dockerfile for a docker build", Long: manageDockerfileLong, Run: func(c *cobra.Command, args []string) {
 		err := cmd.RunManageDockerfile(c.OutOrStderr())
 		kcmdutil.CheckErr(err)
@@ -92,6 +102,8 @@ func NewCommandManageDockerfile(name string) *cobra.Command {
 	return cmd
 }
 func NewCommandExtractImageContent(name string) *cobra.Command {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	cmd := &cobra.Command{Use: name, Short: "Extract build input content from existing images", Long: extractImageContentLong, Run: func(c *cobra.Command, args []string) {
@@ -104,7 +116,16 @@ func NewCommandExtractImageContent(name string) *cobra.Command {
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

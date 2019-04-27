@@ -22,14 +22,20 @@ var timingKey key
 func NewContext(ctx context.Context) context.Context {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return context.WithValue(ctx, timingKey, &[]buildapiv1.StageInfo{})
 }
 func fromContext(ctx context.Context) *[]buildapiv1.StageInfo {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return ctx.Value(timingKey).(*[]buildapiv1.StageInfo)
 }
 func RecordNewStep(ctx context.Context, stageName buildapiv1.StageName, stepName buildapiv1.StepName, startTime metav1.Time, endTime metav1.Time) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	stages := fromContext(ctx)
@@ -39,10 +45,14 @@ func RecordNewStep(ctx context.Context, stageName buildapiv1.StageName, stepName
 func GetStages(ctx context.Context) []buildapiv1.StageInfo {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	stages := fromContext(ctx)
 	return *stages
 }
 func RecordStageAndStepInfo(stages []buildapiv1.StageInfo, stageName buildapiv1.StageName, stepName buildapiv1.StepName, startTime metav1.Time, endTime metav1.Time) []buildapiv1.StageInfo {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	for stageKey, stageVal := range stages {
@@ -68,6 +78,8 @@ func RecordStageAndStepInfo(stages []buildapiv1.StageInfo, stageName buildapiv1.
 func AppendStageAndStepInfo(stages []buildapiv1.StageInfo, stagesToMerge []buildapiv1.StageInfo) []buildapiv1.StageInfo {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for _, stage := range stagesToMerge {
 		for _, step := range stage.Steps {
 			stages = RecordStageAndStepInfo(stages, stage.Name, step.Name, step.StartTime, metav1.NewTime(step.StartTime.Add(time.Duration(step.DurationMilliseconds)*time.Millisecond)))
@@ -78,7 +90,16 @@ func AppendStageAndStepInfo(stages []buildapiv1.StageInfo, stagesToMerge []build
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

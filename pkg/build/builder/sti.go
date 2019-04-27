@@ -44,6 +44,8 @@ type runtimeBuilderFactory struct{ dockerClient DockerClient }
 func (r runtimeBuilderFactory) Builder(config *s2iapi.Config, overrides s2ibuild.Overrides) (s2ibuild.Builder, s2iapi.BuildInfo, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var client docker.Client
 	var err error
 	builder, buildInfo, err := s2i.Strategy(client, config, overrides)
@@ -53,6 +55,8 @@ func (r runtimeBuilderFactory) Builder(config *s2iapi.Config, overrides s2ibuild
 type runtimeConfigValidator struct{}
 
 func (_ runtimeConfigValidator) ValidateConfig(config *s2iapi.Config) []validation.Error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return validation.ValidateConfig(config)
@@ -71,14 +75,20 @@ type S2IBuilder struct {
 func NewS2IBuilder(dockerClient DockerClient, dockerSocket string, buildsClient buildclientv1.BuildInterface, build *buildapiv1.Build, cgLimits *s2iapi.CGroupLimits) *S2IBuilder {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return newS2IBuilder(dockerClient, dockerSocket, buildsClient, build, runtimeBuilderFactory{dockerClient}, runtimeConfigValidator{}, cgLimits)
 }
 func newS2IBuilder(dockerClient DockerClient, dockerSocket string, buildsClient buildclientv1.BuildInterface, build *buildapiv1.Build, builder builderFactory, validator validator, cgLimits *s2iapi.CGroupLimits) *S2IBuilder {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &S2IBuilder{builder: builder, validator: validator, dockerClient: dockerClient, dockerSocket: dockerSocket, build: build, client: buildsClient, cgLimits: cgLimits}
 }
 func injectConfigMaps(configMaps []buildapiv1.ConfigMapBuildSource) []s2iapi.VolumeSpec {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	vols := make([]s2iapi.VolumeSpec, len(configMaps))
@@ -90,6 +100,8 @@ func injectConfigMaps(configMaps []buildapiv1.ConfigMapBuildSource) []s2iapi.Vol
 func injectSecrets(secrets []buildapiv1.SecretBuildSource) []s2iapi.VolumeSpec {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	vols := make([]s2iapi.VolumeSpec, len(secrets))
 	for i, s := range secrets {
 		vols[i] = makeVolumeSpec(secretSource(s), secretBuildSourceBaseMountPath)
@@ -99,10 +111,14 @@ func injectSecrets(secrets []buildapiv1.SecretBuildSource) []s2iapi.VolumeSpec {
 func makeVolumeSpec(src localObjectBuildSource, mountPath string) s2iapi.VolumeSpec {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	glog.V(3).Infof("Injecting build source %q into a build into %q", src.LocalObjectRef().Name, filepath.Clean(src.DestinationPath()))
 	return s2iapi.VolumeSpec{Source: filepath.Join(mountPath, src.LocalObjectRef().Name), Destination: src.DestinationPath(), Keep: !src.IsSecret()}
 }
 func (s *S2IBuilder) Build() error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	var err error
@@ -322,6 +338,8 @@ func (s *S2IBuilder) Build() error {
 func (s *S2IBuilder) setupPullSecret() (*dockerclient.AuthConfigurations, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if len(os.Getenv(dockercfg.PullAuthType)) == 0 {
 		return nil, nil
 	}
@@ -340,6 +358,8 @@ func (s *S2IBuilder) setupPullSecret() (*dockerclient.AuthConfigurations, error)
 func (s *S2IBuilder) pullImage(name string, authConfig dockerclient.AuthConfiguration) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	glog.V(2).Infof("Explicitly pulling image %s", name)
 	repository, tag := dockerclient.ParseRepositoryTag(name)
 	options := dockerclient.PullImageOptions{Repository: repository, Tag: tag}
@@ -353,9 +373,13 @@ func (s *S2IBuilder) pullImage(name string, authConfig dockerclient.AuthConfigur
 func (s *S2IBuilder) buildImage(optimization buildapiv1.ImageOptimizationPolicy, opts dockerclient.BuildImageOptions) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return s.dockerClient.BuildImage(opts)
 }
 func (s *S2IBuilder) pushImage(name string, authConfig dockerclient.AuthConfiguration) (string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	repository, tag := dockerclient.ParseRepositoryTag(name)
@@ -371,6 +395,8 @@ func (s *S2IBuilder) pushImage(name string, authConfig dockerclient.AuthConfigur
 func buildEnvVars(build *buildapiv1.Build, sourceInfo *git.SourceInfo) s2iapi.EnvironmentList {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	bi := buildInfo(build, sourceInfo)
 	envVars := &s2iapi.EnvironmentList{}
 	for _, item := range bi {
@@ -379,6 +405,8 @@ func buildEnvVars(build *buildapiv1.Build, sourceInfo *git.SourceInfo) s2iapi.En
 	return *envVars
 }
 func s2iBuildLabels(build *buildapiv1.Build, sourceInfo *git.SourceInfo) map[string]string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	labels := map[string]string{}
@@ -398,6 +426,8 @@ func s2iBuildLabels(build *buildapiv1.Build, sourceInfo *git.SourceInfo) map[str
 	return labels
 }
 func scriptProxyConfig(build *buildapiv1.Build) (*s2iapi.ProxyConfig, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	httpProxy := ""
@@ -433,6 +463,8 @@ func scriptProxyConfig(build *buildapiv1.Build) (*s2iapi.ProxyConfig, error) {
 func copyToVolumeList(artifactsMapping []buildapiv1.ImageSourcePath) (volumeList s2iapi.VolumeList) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for _, mappedPath := range artifactsMapping {
 		volumeList = append(volumeList, s2iapi.VolumeSpec{Source: mappedPath.SourcePath, Destination: mappedPath.DestinationDir})
 	}
@@ -441,15 +473,21 @@ func copyToVolumeList(artifactsMapping []buildapiv1.ImageSourcePath) (volumeList
 func convertS2IFailureType(reason s2iapi.StepFailureReason, message s2iapi.StepFailureMessage) (buildapiv1.StatusReason, string) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return buildapiv1.StatusReason(reason), string(message)
 }
 func isImagePresent(docker DockerClient, imageTag string) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	image, err := docker.InspectImage(imageTag)
 	return err == nil && image != nil
 }
 func getImageLabels(docker DockerClient, imageTag string) (map[string]string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	image, err := docker.InspectImage(imageTag)
@@ -459,6 +497,8 @@ func getImageLabels(docker DockerClient, imageTag string) (map[string]string, er
 	return image.ContainerConfig.Labels, nil
 }
 func getAssembleUser(docker DockerClient, imageTag string) (string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	image, err := docker.InspectImage(imageTag)

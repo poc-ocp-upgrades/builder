@@ -13,15 +13,21 @@ type defaultSCMContext struct {
 func NewDefaultSCMContext() *defaultSCMContext {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &defaultSCMContext{vars: make(map[string]string)}
 }
 func (c *defaultSCMContext) Get(name string) (string, bool) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	value, ok := c.vars[name]
 	return value, ok
 }
 func (c *defaultSCMContext) Set(name, value string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if oldValue, isSet := c.Get(name); isSet && value != oldValue {
@@ -33,6 +39,8 @@ func (c *defaultSCMContext) Set(name, value string) error {
 func (c *defaultSCMContext) SetOverrideURL(u *url.URL) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if c.overrideURL != nil && c.overrideURL.String() != u.String() {
 		return fmt.Errorf("cannot set the value of overrideURL with value %s. Existing value: %s", c.overrideURL.String(), u.String())
 	}
@@ -42,9 +50,13 @@ func (c *defaultSCMContext) SetOverrideURL(u *url.URL) error {
 func (c *defaultSCMContext) OverrideURL() *url.URL {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return c.overrideURL
 }
 func (c *defaultSCMContext) Env() []string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	env := []string{}

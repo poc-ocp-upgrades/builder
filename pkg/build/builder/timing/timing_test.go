@@ -10,6 +10,8 @@ import (
 func TestRecordStageAndStepInfo(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var stages []buildapiv1.StageInfo
 	stages = RecordStageAndStepInfo(stages, buildapiv1.StageFetchInputs, buildapiv1.StepFetchGitSource, metav1.Now(), metav1.Now())
 	if len(stages) != 1 || len(stages[0].Steps) != 1 {
@@ -24,6 +26,8 @@ func TestRecordStageAndStepInfo(t *testing.T) {
 func TestAppendStageAndStepInfo(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var stages []buildapiv1.StageInfo
 	var stagesToMerge []buildapiv1.StageInfo
 	stages = RecordStageAndStepInfo(stages, buildapiv1.StagePullImages, buildapiv1.StepPullBaseImage, metav1.Now(), metav1.Now())
@@ -36,6 +40,8 @@ func TestAppendStageAndStepInfo(t *testing.T) {
 	}
 }
 func TestTimingContextGetStages(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	ctx := NewContext(context.Background())

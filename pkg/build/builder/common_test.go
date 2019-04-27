@@ -21,6 +21,8 @@ import (
 func TestBuildInfo(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b := &buildapiv1.Build{ObjectMeta: metav1.ObjectMeta{Name: "sample-app", Namespace: "default"}, Spec: buildapiv1.BuildSpec{CommonSpec: buildapiv1.CommonSpec{Source: buildapiv1.BuildSource{Git: &buildapiv1.GitBuildSource{URI: "github.com/openshift/sample-app", Ref: "master"}}, Strategy: buildapiv1.BuildStrategy{SourceStrategy: &buildapiv1.SourceBuildStrategy{Env: []corev1.EnvVar{{Name: "RAILS_ENV", Value: "production"}}}}}}}
 	sourceInfo := &git.SourceInfo{}
 	sourceInfo.CommitID = "1575a90c569a7cc0eea84fbd3304d9df37c9f5ee"
@@ -38,6 +40,8 @@ func TestBuildInfo(t *testing.T) {
 func TestRandomBuildTag(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	tests := []struct {
 		namespace, name	string
 		want		string
@@ -51,6 +55,8 @@ func TestRandomBuildTag(t *testing.T) {
 	}
 }
 func TestRandomBuildTagNoDupes(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	rand.Seed(0)
@@ -67,6 +73,8 @@ func TestRandomBuildTagNoDupes(t *testing.T) {
 func TestContainerName(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	rand.Seed(0)
 	got := containerName("test-strategy", "my-build", "ns", "hook")
 	want := "openshift_test-strategy-build_my-build_ns_hook_f1f85ff5"
@@ -75,6 +83,8 @@ func TestContainerName(t *testing.T) {
 	}
 }
 func TestBuildPostCommit(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	tests := []struct {
@@ -91,6 +101,8 @@ func TestBuildPostCommit(t *testing.T) {
 	}
 }
 func Test_addBuildParameters(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	type want struct {
@@ -268,6 +280,8 @@ func Test_addBuildParameters(t *testing.T) {
 	}
 }
 func Test_findReferencedImages(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	type want struct {

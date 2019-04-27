@@ -10,6 +10,8 @@ import (
 func GetCGroupLimits() (*s2iapi.CGroupLimits, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	byteLimit, err := readInt64("/sys/fs/cgroup/memory/memory.limit_in_bytes")
 	if err != nil {
 		if _, err := os.Stat("/sys/fs/cgroup"); os.IsNotExist(err) {
@@ -27,6 +29,8 @@ func GetCGroupLimits() (*s2iapi.CGroupLimits, error) {
 	return &s2iapi.CGroupLimits{MemoryLimitBytes: byteLimit, MemorySwap: byteLimit, Parent: parent}, nil
 }
 func getCgroupParent() (string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	cgMap, err := cgroups.ParseCgroupFile("/proc/self/cgroup")

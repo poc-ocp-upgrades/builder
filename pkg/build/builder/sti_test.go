@@ -28,6 +28,8 @@ type testStiBuilderFactory struct {
 func (factory testStiBuilderFactory) Builder(config *s2iapi.Config, overrides s2ibuild.Overrides) (s2ibuild.Builder, s2iapi.BuildInfo, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if factory.getStrategyErr != nil {
 		return nil, s2iapi.BuildInfo{}, factory.getStrategyErr
 	}
@@ -37,6 +39,8 @@ func (factory testStiBuilderFactory) Builder(config *s2iapi.Config, overrides s2
 type testBuilder struct{ buildError error }
 
 func (builder testBuilder) Build(config *s2iapi.Config) (*s2iapi.Result, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return &s2iapi.Result{BuildInfo: s2iapi.BuildInfo{}}, builder.buildError
@@ -53,10 +57,14 @@ type testS2IBuilderConfig struct {
 func newTestS2IBuilder(config testS2IBuilderConfig) *S2IBuilder {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	client := &buildfake.Clientset{}
 	return newS2IBuilder(&FakeDocker{pullImageFunc: config.pullImageFunc, inspectImageFunc: config.inspectImageFunc, errPushImage: config.errPushImage}, "unix:///var/run/docker2.sock", client.Build().Builds(""), makeBuild(), testStiBuilderFactory{getStrategyErr: config.getStrategyErr, buildError: config.buildError}, runtimeConfigValidator{}, nil)
 }
 func makeBuild() *buildapiv1.Build {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	t := true
@@ -65,12 +73,16 @@ func makeBuild() *buildapiv1.Build {
 func TestMain(m *testing.M) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	DefaultPushOrPullRetryCount = 1
 	DefaultPushOrPullRetryDelay = 5 * time.Millisecond
 	flag.Parse()
 	os.Exit(m.Run())
 }
 func TestDockerBuildError(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	expErr := errors.New("Artificial exception: Error building")
@@ -82,6 +94,8 @@ func TestDockerBuildError(t *testing.T) {
 func TestPushError(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	expErr := errors.New("Artificial exception: Error pushing image")
 	s2iBuilder := newTestS2IBuilder(testS2IBuilderConfig{errPushImage: expErr})
 	if err := s2iBuilder.Build(); !strings.HasSuffix(err.Error(), expErr.Error()) {
@@ -89,6 +103,8 @@ func TestPushError(t *testing.T) {
 	}
 }
 func TestGetStrategyError(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	expErr := errors.New("Artificial exception: config error")
@@ -100,6 +116,8 @@ func TestGetStrategyError(t *testing.T) {
 func TestCopyToVolumeList(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	newArtifacts := []buildapiv1.ImageSourcePath{{SourcePath: "/path/to/source", DestinationDir: "path/to/destination"}}
 	volumeList := s2iapi.VolumeList{s2iapi.VolumeSpec{Source: "/path/to/source", Destination: "path/to/destination"}}
 	newVolumeList := copyToVolumeList(newArtifacts)
@@ -108,6 +126,8 @@ func TestCopyToVolumeList(t *testing.T) {
 	}
 }
 func TestInjectSecrets(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	secrets := []buildapiv1.SecretBuildSource{{Secret: corev1.LocalObjectReference{Name: "secret1"}, DestinationDir: "/tmp"}, {Secret: corev1.LocalObjectReference{Name: "secret2"}}}
@@ -125,6 +145,8 @@ func TestInjectSecrets(t *testing.T) {
 func TestInjectConfigMaps(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	configMaps := []buildapiv1.ConfigMapBuildSource{{ConfigMap: corev1.LocalObjectReference{Name: "configMap1"}, DestinationDir: "/tmp"}, {ConfigMap: corev1.LocalObjectReference{Name: "configMap2"}}}
 	output := injectConfigMaps(configMaps)
 	for i, v := range output {
@@ -138,6 +160,8 @@ func TestInjectConfigMaps(t *testing.T) {
 	}
 }
 func TestBuildEnvVars(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	expectedEnvList := s2iapi.EnvironmentList{s2iapi.EnvironmentSpec{Name: "OPENSHIFT_BUILD_NAME", Value: "openshift-test-1-build"}, s2iapi.EnvironmentSpec{Name: "OPENSHIFT_BUILD_NAMESPACE", Value: "openshift-demo"}, s2iapi.EnvironmentSpec{Name: "OPENSHIFT_BUILD_SOURCE", Value: "http://localhost/123"}, s2iapi.EnvironmentSpec{Name: "OPENSHIFT_BUILD_COMMIT", Value: "1575a90c569a7cc0eea84fbd3304d9df37c9f5ee"}, s2iapi.EnvironmentSpec{Name: "HTTPS_PROXY", Value: "https://test/secure:8443"}, s2iapi.EnvironmentSpec{Name: "HTTP_PROXY", Value: "http://test/insecure:8080"}}
@@ -164,6 +188,8 @@ func TestBuildEnvVars(t *testing.T) {
 func TestScriptProxyConfig(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	newBuild := &buildapiv1.Build{Spec: buildapiv1.BuildSpec{CommonSpec: buildapiv1.CommonSpec{Strategy: buildapiv1.BuildStrategy{SourceStrategy: &buildapiv1.SourceBuildStrategy{Env: append([]corev1.EnvVar{}, corev1.EnvVar{Name: "HTTPS_PROXY", Value: "https://test/secure"}, corev1.EnvVar{Name: "HTTP_PROXY", Value: "http://test/insecure"})}}}}}
 	resultedProxyConf, err := scriptProxyConfig(newBuild)
 	if err != nil {
@@ -177,6 +203,8 @@ func TestScriptProxyConfig(t *testing.T) {
 	}
 }
 func TestIncrementalPullError(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	inspectFunc := func(name string) (*docker.Image, error) {
@@ -197,6 +225,8 @@ func TestIncrementalPullError(t *testing.T) {
 	}
 }
 func TestGetAssembleUser(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	testCases := []struct {

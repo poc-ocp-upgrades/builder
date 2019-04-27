@@ -16,6 +16,8 @@ var (
 func SafeForLoggingURL(u *url.URL) *url.URL {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if u == nil {
 		return nil
 	}
@@ -33,6 +35,8 @@ func SafeForLoggingURL(u *url.URL) *url.URL {
 func SafeForLoggingEnvVar(env []corev1.EnvVar) []corev1.EnvVar {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	newEnv := make([]corev1.EnvVar, len(env))
 	copy(newEnv, env)
 	for i, env := range newEnv {
@@ -43,6 +47,8 @@ func SafeForLoggingEnvVar(env []corev1.EnvVar) []corev1.EnvVar {
 	return newEnv
 }
 func SafeForLoggingBuildCommonSpec(spec *buildapiv1.CommonSpec) *buildapiv1.CommonSpec {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	newSpec := spec.DeepCopy()
@@ -73,12 +79,16 @@ func SafeForLoggingBuildCommonSpec(spec *buildapiv1.CommonSpec) *buildapiv1.Comm
 func SafeForLoggingBuild(build *buildapiv1.Build) *buildapiv1.Build {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	newBuild := *build
 	newSpec := SafeForLoggingBuildCommonSpec(&build.Spec.CommonSpec)
 	newBuild.Spec.CommonSpec = *newSpec
 	return &newBuild
 }
 func SafeForLoggingEnvironmentList(env s2iapi.EnvironmentList) s2iapi.EnvironmentList {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	newEnv := make(s2iapi.EnvironmentList, len(env))
@@ -92,6 +102,8 @@ func SafeForLoggingEnvironmentList(env s2iapi.EnvironmentList) s2iapi.Environmen
 	return newEnv
 }
 func SafeForLoggingS2IConfig(config *s2iapi.Config) *s2iapi.Config {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	newConfig := *config

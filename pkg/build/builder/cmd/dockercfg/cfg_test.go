@@ -10,6 +10,8 @@ import (
 func TestGetDockerAuth(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var (
 		configJsonFileName	= "config.json"
 		testEnvKey		= "TMP_PULL_DOCKER_CFG_AUTH_ENV_FOO_BAR"

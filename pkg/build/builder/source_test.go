@@ -21,6 +21,8 @@ import (
 func TestCheckRemoteGit(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 	}))
@@ -47,6 +49,8 @@ type testGitRepo struct {
 }
 
 func initializeTestGitRepo(name string) (*testGitRepo, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	repo := &testGitRepo{Name: name}
@@ -80,6 +84,8 @@ func initializeTestGitRepo(name string) (*testGitRepo, error) {
 func (r *testGitRepo) addSubmodule() error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	subRepo, err := initializeTestGitRepo("submodule")
 	if err != nil {
 		return err
@@ -98,6 +104,8 @@ func (r *testGitRepo) addSubmodule() error {
 func (r *testGitRepo) getRef(offset int) (string, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	q := ""
 	for i := offset; i != 0; i++ {
 		q += "^"
@@ -113,6 +121,8 @@ func (r *testGitRepo) getRef(offset int) (string, error) {
 func (r *testGitRepo) createBranch(name string) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	refCmd := exec.Command("git", "checkout", "-b", name)
 	refCmd.Dir = r.Path
 	if out, err := refCmd.CombinedOutput(); err != nil {
@@ -121,6 +131,8 @@ func (r *testGitRepo) createBranch(name string) error {
 	return nil
 }
 func (r *testGitRepo) switchBranch(name string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	refCmd := exec.Command("git", "checkout", name)
@@ -133,12 +145,16 @@ func (r *testGitRepo) switchBranch(name string) error {
 func (r *testGitRepo) cleanup() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	os.RemoveAll(r.Path)
 	if r.Submodule != nil {
 		os.RemoveAll(r.Submodule.Path)
 	}
 }
 func (r *testGitRepo) addCommit() error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	f, err := ioutil.TempFile(r.Path, "")
@@ -163,6 +179,8 @@ func (r *testGitRepo) addCommit() error {
 	return nil
 }
 func TestUnqualifiedClone(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	repo, err := initializeTestGitRepo("unqualified")
@@ -203,6 +221,8 @@ func TestUnqualifiedClone(t *testing.T) {
 	}
 }
 func TestCloneFromRef(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	repo, err := initializeTestGitRepo("commit")
@@ -250,6 +270,8 @@ func TestCloneFromRef(t *testing.T) {
 	}
 }
 func TestCloneFromBranch(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	repo, err := initializeTestGitRepo("branch")
@@ -304,6 +326,8 @@ func TestCloneFromBranch(t *testing.T) {
 func TestCopyImageSourceFromFilesystem(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	testCases := []struct {
 		name		string
 		testFiles	map[string]string
@@ -353,6 +377,8 @@ func TestCopyImageSourceFromFilesystem(t *testing.T) {
 func createTestFile(testDir string, filename string, content string) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	file := filepath.Join(testDir, filename)
 	fileDir := filepath.Dir(file)
 	if _, err := os.Stat(fileDir); err != nil {
@@ -366,6 +392,8 @@ func createTestFile(testDir string, filename string, content string) error {
 func createTestSymlink(testDir string, linkname string, source string) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	file := filepath.Join(testDir, linkname)
 	fileDir := filepath.Dir(file)
 	if _, err := os.Stat(fileDir); err != nil {
@@ -377,6 +405,8 @@ func createTestSymlink(testDir string, linkname string, source string) error {
 	return os.Symlink(source, file)
 }
 func verifyFile(filename string, expectedContent string, t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	info, err := os.Lstat(filename)
@@ -402,6 +432,8 @@ func verifyFile(filename string, expectedContent string, t *testing.T) {
 	}
 }
 func verifyLink(filename string, expectedSrc string, t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	info, err := os.Lstat(filename)

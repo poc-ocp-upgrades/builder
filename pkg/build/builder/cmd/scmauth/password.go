@@ -27,6 +27,8 @@ type UsernamePassword struct{ SourceURL s2igit.URL }
 func (u UsernamePassword) Setup(baseDir string, context SCMAuthContext) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if !(u.SourceURL.Type == s2igit.URLTypeURL && (u.SourceURL.URL.Scheme == "http" || u.SourceURL.URL.Scheme == "https") && u.SourceURL.URL.Opaque == "") {
 		return nil
 	}
@@ -73,6 +75,8 @@ func (u UsernamePassword) Setup(baseDir string, context SCMAuthContext) error {
 func doSetup(sourceURL url.URL, usernameSecret, passwordSecret, tokenSecret string) (*url.URL, *url.URL, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	urlUsername := ""
 	urlPassword := ""
 	if sourceURL.User != nil {
@@ -105,9 +109,13 @@ func doSetup(sourceURL url.URL, usernameSecret, passwordSecret, tokenSecret stri
 func (_ UsernamePassword) Name() string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return UsernamePasswordName
 }
 func (_ UsernamePassword) Handles(name string) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	switch name {
@@ -117,6 +125,8 @@ func (_ UsernamePassword) Handles(name string) bool {
 	return false
 }
 func readSecret(baseDir, fileName string) (string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	path := filepath.Join(baseDir, fileName)

@@ -34,9 +34,13 @@ type DockerBuilder struct {
 func NewDockerBuilder(dockerClient DockerClient, buildsClient buildclientv1.BuildInterface, build *buildapiv1.Build, cgLimits *s2iapi.CGroupLimits) *DockerBuilder {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &DockerBuilder{dockerClient: dockerClient, build: build, client: buildsClient, cgLimits: cgLimits, inputDir: InputContentPath}
 }
 func (d *DockerBuilder) Build() error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	var err error
@@ -139,6 +143,8 @@ func (d *DockerBuilder) Build() error {
 func (d *DockerBuilder) pullImage(name string, authConfig docker.AuthConfiguration) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	repository, tag := docker.ParseRepositoryTag(name)
 	options := docker.PullImageOptions{Repository: repository, Tag: tag}
 	if options.Tag == "" && strings.Contains(name, "@") {
@@ -149,6 +155,8 @@ func (d *DockerBuilder) pullImage(name string, authConfig docker.AuthConfigurati
 	})
 }
 func (d *DockerBuilder) pushImage(name string, authConfig docker.AuthConfiguration) (string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	repository, tag := docker.ParseRepositoryTag(name)
@@ -164,6 +172,8 @@ func (d *DockerBuilder) pushImage(name string, authConfig docker.AuthConfigurati
 func (d *DockerBuilder) copyConfigMaps(configs []buildapiv1.ConfigMapBuildSource, targetDir string) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var err error
 	for _, c := range configs {
 		err = d.copyLocalObject(configMapSource(c), configMapBuildSourceBaseMountPath, targetDir)
@@ -176,6 +186,8 @@ func (d *DockerBuilder) copyConfigMaps(configs []buildapiv1.ConfigMapBuildSource
 func (d *DockerBuilder) copySecrets(secrets []buildapiv1.SecretBuildSource, targetDir string) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var err error
 	for _, s := range secrets {
 		err = d.copyLocalObject(secretSource(s), secretBuildSourceBaseMountPath, targetDir)
@@ -186,6 +198,8 @@ func (d *DockerBuilder) copySecrets(secrets []buildapiv1.SecretBuildSource, targ
 	return nil
 }
 func (d *DockerBuilder) copyLocalObject(s localObjectBuildSource, sourceDir, targetDir string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	dstDir := filepath.Join(targetDir, s.DestinationPath())
@@ -225,6 +239,8 @@ func (d *DockerBuilder) copyLocalObject(s localObjectBuildSource, sourceDir, tar
 	return nil
 }
 func (d *DockerBuilder) dockerBuild(ctx context.Context, dir string, tag string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	var noCache bool
@@ -273,6 +289,8 @@ func (d *DockerBuilder) dockerBuild(ctx context.Context, dir string, tag string)
 func getDockerfilePath(dir string, build *buildapiv1.Build) string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var contextDirPath string
 	if build.Spec.Strategy.DockerStrategy != nil && len(build.Spec.Source.ContextDir) > 0 {
 		contextDirPath = filepath.Join(dir, build.Spec.Source.ContextDir)
@@ -288,6 +306,8 @@ func getDockerfilePath(dir string, build *buildapiv1.Build) string {
 	return dockerfilePath
 }
 func replaceLastFrom(node *parser.Node, image string, alias string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if node == nil {
@@ -319,6 +339,8 @@ func replaceLastFrom(node *parser.Node, image string, alias string) error {
 func getLastFrom(node *parser.Node) (string, string) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if node == nil {
 		return "", ""
 	}
@@ -342,9 +364,13 @@ func getLastFrom(node *parser.Node) (string, string) {
 func appendEnv(node *parser.Node, m []dockerfile.KeyValue) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return appendKeyValueInstruction(dockerfile.Env, node, m)
 }
 func appendLabel(node *parser.Node, m []dockerfile.KeyValue) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if len(m) == 0 {
@@ -353,6 +379,8 @@ func appendLabel(node *parser.Node, m []dockerfile.KeyValue) error {
 	return appendKeyValueInstruction(dockerfile.Label, node, m)
 }
 func appendPostCommit(node *parser.Node, cmd string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if len(cmd) == 0 {
@@ -379,6 +407,8 @@ func appendPostCommit(node *parser.Node, cmd string) error {
 func appendStringInstruction(f func(string) (string, error), node *parser.Node, cmd string) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if node == nil {
 		return nil
 	}
@@ -391,6 +421,8 @@ func appendStringInstruction(f func(string) (string, error), node *parser.Node, 
 func appendKeyValueInstruction(f func([]dockerfile.KeyValue) (string, error), node *parser.Node, m []dockerfile.KeyValue) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if node == nil {
 		return nil
 	}
@@ -401,6 +433,8 @@ func appendKeyValueInstruction(f func([]dockerfile.KeyValue) (string, error), no
 	return dockerfile.InsertInstructions(node, len(node.Children), instruction)
 }
 func insertEnvAfterFrom(node *parser.Node, env []corev1.EnvVar) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if node == nil || len(env) == 0 {

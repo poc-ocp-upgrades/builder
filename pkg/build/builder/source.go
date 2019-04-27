@@ -36,14 +36,20 @@ type gitNotFoundError string
 func (e gitAuthError) Error() string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return fmt.Sprintf("failed to fetch requested repository %q with provided credentials", string(e))
 }
 func (e gitNotFoundError) Error() string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return fmt.Sprintf("requested repository %q not found", string(e))
 }
 func GitClone(ctx context.Context, gitClient GitClient, gitSource *buildapiv1.GitBuildSource, revision *buildapiv1.SourceRevision, dir string) (*git.SourceInfo, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	err := os.RemoveAll(dir)
@@ -82,6 +88,8 @@ func GitClone(ctx context.Context, gitClient GitClient, gitSource *buildapiv1.Gi
 func ManageDockerfile(dir string, build *buildapiv1.Build) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	os.MkdirAll(dir, 0777)
 	glog.V(5).Infof("Checking for presence of a Dockerfile")
 	if dockerfileSource := build.Spec.Source.Dockerfile; dockerfileSource != nil {
@@ -103,6 +111,8 @@ func ManageDockerfile(dir string, build *buildapiv1.Build) error {
 	return nil
 }
 func ExtractImageContent(ctx context.Context, dockerClient DockerClient, store storage.Store, dir string, build *buildapiv1.Build, blobCacheDirectory string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	os.MkdirAll(dir, 0777)
@@ -131,6 +141,8 @@ func ExtractImageContent(ctx context.Context, dockerClient DockerClient, store s
 	return nil
 }
 func checkRemoteGit(gitClient GitClient, url string, initialTimeout time.Duration) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	var (
@@ -171,6 +183,8 @@ func checkRemoteGit(gitClient GitClient, url string, initialTimeout time.Duratio
 func checkSourceURI(gitClient GitClient, rawurl string, timeout time.Duration) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_, err := s2igit.Parse(rawurl)
 	if err != nil {
 		return fmt.Errorf("Invalid git source url %q: %v", rawurl, err)
@@ -178,6 +192,8 @@ func checkSourceURI(gitClient GitClient, rawurl string, timeout time.Duration) e
 	return checkRemoteGit(gitClient, rawurl, timeout)
 }
 func ExtractInputBinary(in io.Reader, source *buildapiv1.BinaryBuildSource, dir string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	os.MkdirAll(dir, 0777)
@@ -215,6 +231,8 @@ func ExtractInputBinary(in io.Reader, source *buildapiv1.BinaryBuildSource, dir 
 	return nil
 }
 func extractGitSource(ctx context.Context, gitClient GitClient, gitSource *buildapiv1.GitBuildSource, revision *buildapiv1.SourceRevision, dir string, timeout time.Duration) (bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if gitSource == nil {
@@ -265,6 +283,8 @@ func extractGitSource(ctx context.Context, gitClient GitClient, gitSource *build
 func copyImageSourceFromFilesytem(sourceDir, destDir string) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	fi, err := os.Stat(destDir)
 	if err != nil {
 		if !os.IsNotExist(err) {
@@ -293,6 +313,8 @@ func copyImageSourceFromFilesytem(sourceDir, destDir string) error {
 	return nil
 }
 func extractSourceFromImage(ctx context.Context, dockerClient DockerClient, store storage.Store, image, buildDir string, imageSecretIndex int, paths []buildapiv1.ImageSourcePath, forcePull bool, blobCacheDirectory string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	glog.V(4).Infof("Extracting image source from image %s", image)

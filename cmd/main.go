@@ -20,6 +20,8 @@ import (
 func main() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if reexec.Init() {
 		return
 	}
@@ -69,6 +71,8 @@ func main() {
 func CopyDirIfExists(src, dst string) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	srcInfo, err := os.Stat(src)
 	if os.IsNotExist(err) {
 		return nil
@@ -94,6 +98,8 @@ func CopyDirIfExists(src, dst string) error {
 func CopyFileIfExists(src, dst string) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_, err := os.Stat(src)
 	if os.IsNotExist(err) {
 		return nil
@@ -115,6 +121,8 @@ func CopyFileIfExists(src, dst string) error {
 	return out.Close()
 }
 func CommandFor(basename string) *cobra.Command {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	var cmd *cobra.Command

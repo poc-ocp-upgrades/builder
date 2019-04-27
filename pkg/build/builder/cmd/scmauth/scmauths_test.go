@@ -11,14 +11,20 @@ type testAuth struct{ name string }
 func (a *testAuth) Name() string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return a.name
 }
 func (a *testAuth) Handles(name string) bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return name == a.name
 }
 func (a *testAuth) Setup(baseDir string, context SCMAuthContext) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	context.Set(a.name, "test")
@@ -27,9 +33,13 @@ func (a *testAuth) Setup(baseDir string, context SCMAuthContext) error {
 func scmAuths() SCMAuths {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return SCMAuths{&testAuth{name: "one"}, &testAuth{name: "two"}, &testAuth{name: "three"}}
 }
 func TestPresent(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	secretDir := secretDir(t, "one", "three")
@@ -49,6 +59,8 @@ func TestPresent(t *testing.T) {
 	}
 }
 func TestSetup(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	secretDir := secretDir(t, "one", "two", "three")

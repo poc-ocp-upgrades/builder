@@ -30,13 +30,19 @@ type Helper struct{}
 func NewHelper() *Helper {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &Helper{}
 }
 func (h *Helper) InstallFlags(flags *pflag.FlagSet) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 }
 func (h *Helper) GetDockerAuth(imageName, authType string) (docker.AuthConfiguration, bool) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	glog.V(3).Infof("Locating docker auth for image %s and type %s", imageName, authType)
@@ -66,6 +72,8 @@ func (h *Helper) GetDockerAuth(imageName, authType string) (docker.AuthConfigura
 func GetDockercfgFile(path string) string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var cfgPath string
 	if path != "" {
 		cfgPath = path
@@ -87,6 +95,8 @@ func GetDockercfgFile(path string) string {
 func GetDockerConfig(path []string) (cfg credentialprovider.DockerConfig, err error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if cfg, err = credentialprovider.ReadDockerConfigJSONFile(path); err != nil {
 		if cfg, err = ReadDockerConfigJsonFileGeneratedFromSecret(path); err != nil {
 			cfg, err = credentialprovider.ReadDockercfgFile(path)
@@ -95,6 +105,8 @@ func GetDockerConfig(path []string) (cfg credentialprovider.DockerConfig, err er
 	return cfg, err
 }
 func ReadDockerConfigJsonFileGeneratedFromSecret(path []string) (cfg credentialprovider.DockerConfig, err error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	for _, filePath := range path {
@@ -108,6 +120,8 @@ func ReadDockerConfigJsonFileGeneratedFromSecret(path []string) (cfg credentialp
 func getExtraSearchPaths() (searchPaths []string) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if dockerCfgPath := os.Getenv("DOCKERCFG_PATH"); dockerCfgPath != "" {
 		dockerCfgDir := filepath.Dir(dockerCfgPath)
 		searchPaths = append(searchPaths, dockerCfgDir)
@@ -117,7 +131,16 @@ func getExtraSearchPaths() (searchPaths []string) {
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

@@ -15,6 +15,8 @@ var glog = utilglog.ToFile(os.Stderr, 2)
 func createGitConfig(includePath string, context SCMAuthContext) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	tempDir, err := ioutil.TempDir("", "git")
 	if err != nil {
 		return err
@@ -33,6 +35,8 @@ func createGitConfig(includePath string, context SCMAuthContext) error {
 	return nil
 }
 func ensureGitConfigIncludes(path string, context SCMAuthContext) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	gitconfig, present := context.Get("GIT_CONFIG")

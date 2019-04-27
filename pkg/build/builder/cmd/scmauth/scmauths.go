@@ -13,10 +13,14 @@ type SCMAuths []SCMAuth
 func GitAuths(sourceURL *s2igit.URL) SCMAuths {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	auths := SCMAuths{&SSHPrivateKey{}, &UsernamePassword{SourceURL: *sourceURL}, &CACert{SourceURL: *sourceURL}, &GitConfig{}}
 	return auths
 }
 func (a SCMAuths) present(files []os.FileInfo) SCMAuths {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	scmAuthsPresent := map[string]SCMAuth{}
@@ -38,6 +42,8 @@ func (a SCMAuths) present(files []os.FileInfo) SCMAuths {
 func (a SCMAuths) doSetup(secretsDir string) (*defaultSCMContext, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	context := NewDefaultSCMContext()
 	for _, auth := range a {
 		glog.V(4).Infof("Setting up SCMAuth %q", auth.Name())
@@ -49,6 +55,8 @@ func (a SCMAuths) doSetup(secretsDir string) (*defaultSCMContext, error) {
 	return context, nil
 }
 func (a SCMAuths) Setup(secretsDir string) (env []string, overrideURL *url.URL, err error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	files, err := ioutil.ReadDir(secretsDir)

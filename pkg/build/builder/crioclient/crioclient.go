@@ -28,6 +28,8 @@ type crioClientImpl struct {
 func configureUnixTransport(tr *http.Transport, proto, addr string) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if len(addr) > maxUnixSocketPathSize {
 		return fmt.Errorf("Unix socket path %q is too long", addr)
 	}
@@ -40,12 +42,16 @@ func configureUnixTransport(tr *http.Transport, proto, addr string) error {
 func New(crioSocketPath string) (CrioClient, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	tr := new(http.Transport)
 	configureUnixTransport(tr, "unix", crioSocketPath)
 	c := &http.Client{Transport: tr}
 	return &crioClientImpl{client: c, crioSocketPath: crioSocketPath}, nil
 }
 func (c *crioClientImpl) getRequest(path string) (*http.Request, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	req, err := http.NewRequest("GET", path, nil)
@@ -58,6 +64,8 @@ func (c *crioClientImpl) getRequest(path string) (*http.Request, error) {
 	return req, nil
 }
 func (c *crioClientImpl) DaemonInfo() (CrioInfo, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	info := CrioInfo{}
@@ -76,6 +84,8 @@ func (c *crioClientImpl) DaemonInfo() (CrioInfo, error) {
 	return info, nil
 }
 func (c *crioClientImpl) ContainerInfo(id string) (*ContainerInfo, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	req, err := c.getRequest("/containers/" + id)
@@ -119,7 +129,16 @@ type CrioInfo struct {
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

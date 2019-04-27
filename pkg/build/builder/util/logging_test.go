@@ -16,6 +16,8 @@ var redactedRegex = regexp.MustCompile("redacted")
 func TestSafeForLoggingS2IConfig(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	http, _ := url.Parse("http://user:password@proxy.com")
 	https, _ := url.Parse("https://user:password@proxy.com")
 	config := &s2iapi.Config{ScriptsURL: "https://user:password@proxy.com", Environment: []s2iapi.EnvironmentSpec{{Name: "HTTP_PROXY", Value: "http://user:password@proxy.com"}, {Name: "HTTPS_PROXY", Value: "https://user:password@proxy.com"}, {Name: "other_value", Value: "http://user:password@proxy.com"}, {Name: "NO_PROXY", Value: ".cluster.local"}}, ScriptDownloadProxyConfig: &s2iapi.ProxyConfig{HTTPProxy: http, HTTPSProxy: https}}
@@ -62,6 +64,8 @@ func TestSafeForLoggingS2IConfig(t *testing.T) {
 func checkEnvList(t *testing.T, envs s2iapi.EnvironmentList, orig bool) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for _, env := range envs {
 		if env.Name == "other_value" {
 			if !credsRegex.MatchString(env.Value) {
@@ -92,6 +96,8 @@ func checkEnvList(t *testing.T, envs s2iapi.EnvironmentList, orig bool) {
 func TestSafeForLoggingBuild(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	httpProxy := "http://user:password@proxy.com"
 	httpsProxy := "https://user:password@proxy.com"
 	proxyBuild := &buildapiv1.Build{Spec: buildapiv1.BuildSpec{CommonSpec: buildapiv1.CommonSpec{Source: buildapiv1.BuildSource{Git: &buildapiv1.GitBuildSource{ProxyConfig: buildapiv1.ProxyConfig{HTTPProxy: &httpProxy, HTTPSProxy: &httpsProxy}}}, Strategy: buildapiv1.BuildStrategy{SourceStrategy: &buildapiv1.SourceBuildStrategy{Env: []corev1.EnvVar{{Name: "HTTP_PROXY", Value: "http://user:password@proxy.com"}, {Name: "HTTPS_PROXY", Value: "https://user:password@proxy.com"}, {Name: "other_value", Value: "http://user:password@proxy.com"}, {Name: "NO_PROXY", Value: ".cluster.local"}}}, DockerStrategy: &buildapiv1.DockerBuildStrategy{Env: []corev1.EnvVar{{Name: "HTTP_PROXY", Value: "http://user:password@proxy.com"}, {Name: "HTTPS_PROXY", Value: "https://user:password@proxy.com"}, {Name: "other_value", Value: "http://user:password@proxy.com"}, {Name: "NO_PROXY", Value: ".cluster.local"}}}, CustomStrategy: &buildapiv1.CustomBuildStrategy{Env: []corev1.EnvVar{{Name: "HTTP_PROXY", Value: "http://user:password@proxy.com"}, {Name: "HTTPS_PROXY", Value: "https://user:password@proxy.com"}, {Name: "other_value", Value: "http://user:password@proxy.com"}, {Name: "NO_PROXY", Value: ".cluster.local"}}}, JenkinsPipelineStrategy: &buildapiv1.JenkinsPipelineBuildStrategy{Env: []corev1.EnvVar{{Name: "HTTP_PROXY", Value: "http://user:password@proxy.com"}, {Name: "HTTPS_PROXY", Value: "https://user:password@proxy.com"}, {Name: "other_value", Value: "http://user:password@proxy.com"}, {Name: "NO_PROXY", Value: ".cluster.local"}}}}}}}
@@ -118,6 +124,8 @@ func TestSafeForLoggingBuild(t *testing.T) {
 	checkEnv(t, proxyBuild.Spec.Strategy.JenkinsPipelineStrategy.Env, true)
 }
 func checkEnv(t *testing.T, envs []corev1.EnvVar, orig bool) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	for _, env := range envs {
@@ -147,10 +155,14 @@ func checkEnv(t *testing.T, envs []corev1.EnvVar, orig bool) {
 func isURL(rawurl string) bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_, err := url.Parse(rawurl)
 	return err != nil
 }
 func urlStringHasPassword(rawurl string) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	url, err := url.Parse(rawurl)
@@ -162,6 +174,8 @@ func urlStringHasPassword(rawurl string) bool {
 func urlHasPassword(url *url.URL) bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if url.User == nil {
 		return false
 	}
@@ -169,6 +183,8 @@ func urlHasPassword(url *url.URL) bool {
 	return hasPassword
 }
 func TestSafeForLoggingURL(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	cases := []string{"https://user:password@hostname.com", "https://user@hostname.com", "https://www.redhat.com", "http://somesite.com/home/page.html#fragment", "http://somesite.com/home/page.html?q=search&foo=bar"}

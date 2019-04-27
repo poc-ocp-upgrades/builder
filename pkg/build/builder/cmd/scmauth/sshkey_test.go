@@ -8,6 +8,8 @@ import (
 func TestSSHPrivateKeyHandles(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	sshKey := &SSHPrivateKey{}
 	if !sshKey.Handles("ssh-privatekey") {
 		t.Errorf("should handle ssh-privatekey")
@@ -17,6 +19,8 @@ func TestSSHPrivateKeyHandles(t *testing.T) {
 	}
 }
 func TestSSHPrivateKeySetup(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	context := NewDefaultSCMContext()

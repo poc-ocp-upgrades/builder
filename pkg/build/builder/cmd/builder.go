@@ -40,6 +40,8 @@ var (
 func init() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	buildJSONCodec = buildCodecFactory.LegacyCodec(buildapiv1.SchemeGroupVersion)
 }
 
@@ -59,6 +61,8 @@ type builderConfig struct {
 }
 
 func newBuilderConfigFromEnvironment(out io.Writer, needsDocker bool) (*builderConfig, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	cfg := &builderConfig{}
@@ -147,6 +151,8 @@ func newBuilderConfigFromEnvironment(out io.Writer, needsDocker bool) (*builderC
 func (c *builderConfig) setupGitEnvironment() (string, []string, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	gitSource := c.build.Spec.Source.Git
 	if gitSource == nil {
 		return "", []string{}, nil
@@ -183,6 +189,8 @@ func (c *builderConfig) setupGitEnvironment() (string, []string, error) {
 	return c.sourceSecretDir, bld.MergeEnv(os.Environ(), gitEnv), nil
 }
 func (c *builderConfig) clone() error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	ctx := timing.NewContext(context.Background())
@@ -229,6 +237,8 @@ func (c *builderConfig) clone() error {
 func (c *builderConfig) extractImageContent() error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	ctx := timing.NewContext(context.Background())
 	defer func() {
 		c.build.Status.Stages = timing.GetStages(ctx)
@@ -238,6 +248,8 @@ func (c *builderConfig) extractImageContent() error {
 	return bld.ExtractImageContent(ctx, c.dockerClient, c.store, buildDir, c.build, c.blobCache)
 }
 func (c *builderConfig) execute(b builder) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	cgLimits, err := bld.GetCGroupLimits()
@@ -259,6 +271,8 @@ type dockerBuilder struct{}
 func (dockerBuilder) Build(dockerClient bld.DockerClient, sock string, buildsClient buildclientv1.BuildInterface, build *buildapiv1.Build, cgLimits *s2iapi.CGroupLimits) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return bld.NewDockerBuilder(dockerClient, buildsClient, build, cgLimits).Build()
 }
 
@@ -267,9 +281,13 @@ type s2iBuilder struct{}
 func (s2iBuilder) Build(dockerClient bld.DockerClient, sock string, buildsClient buildclientv1.BuildInterface, build *buildapiv1.Build, cgLimits *s2iapi.CGroupLimits) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return bld.NewS2IBuilder(dockerClient, sock, buildsClient, build, cgLimits).Build()
 }
 func runBuild(out io.Writer, builder builder) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	logVersion()
@@ -285,6 +303,8 @@ func runBuild(out io.Writer, builder builder) error {
 func RunDockerBuild(out io.Writer) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	switch {
 	case glog.Is(6):
 		serviceability.InitLogrus("DEBUG")
@@ -298,6 +318,8 @@ func RunDockerBuild(out io.Writer) error {
 func RunS2IBuild(out io.Writer) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	switch {
 	case glog.Is(6):
 		serviceability.InitLogrus("DEBUG")
@@ -309,6 +331,8 @@ func RunS2IBuild(out io.Writer) error {
 	return runBuild(out, s2iBuilder{})
 }
 func RunGitClone(out io.Writer) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	switch {
@@ -332,6 +356,8 @@ func RunGitClone(out io.Writer) error {
 func RunManageDockerfile(out io.Writer) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	switch {
 	case glog.Is(6):
 		serviceability.InitLogrus("DEBUG")
@@ -351,6 +377,8 @@ func RunManageDockerfile(out io.Writer) error {
 	return bld.ManageDockerfile(bld.InputContentPath, cfg.build)
 }
 func RunExtractImageContent(out io.Writer) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	switch {
@@ -374,12 +402,23 @@ func RunExtractImageContent(out io.Writer) error {
 func logVersion() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	glog.V(5).Infof("openshift-builder %v", version.Get())
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
-	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

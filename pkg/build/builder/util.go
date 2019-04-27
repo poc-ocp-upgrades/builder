@@ -28,6 +28,8 @@ var (
 func MergeEnv(oldEnv, newEnv []string) []string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	key := func(e string) string {
 		i := strings.Index(e, "=")
 		if i == -1 {
@@ -52,6 +54,8 @@ func MergeEnv(oldEnv, newEnv []string) []string {
 func reportPushFailure(err error, authPresent bool, pushAuthConfig docker.AuthConfiguration) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if authPresent {
 		glog.V(0).Infof("Registry server Address: %s", pushAuthConfig.ServerAddress)
 		glog.V(0).Infof("Registry server User Name: %s", pushAuthConfig.Username)
@@ -67,10 +71,14 @@ func reportPushFailure(err error, authPresent bool, pushAuthConfig docker.AuthCo
 func addBuildLabels(labels map[string]string, build *buildapiv1.Build) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	labels[builderutil.DefaultDockerLabelNamespace+"build.name"] = build.Name
 	labels[builderutil.DefaultDockerLabelNamespace+"build.namespace"] = build.Namespace
 }
 func SafeForLoggingEnvironmentList(env s2iapi.EnvironmentList) s2iapi.EnvironmentList {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	newEnv := make(s2iapi.EnvironmentList, len(env))
@@ -84,6 +92,8 @@ func SafeForLoggingEnvironmentList(env s2iapi.EnvironmentList) s2iapi.Environmen
 	return newEnv
 }
 func SafeForLoggingS2IConfig(config *s2iapi.Config) *s2iapi.Config {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	newConfig := *config
@@ -104,6 +114,8 @@ func SafeForLoggingS2IConfig(config *s2iapi.Config) *s2iapi.Config {
 func ReadLines(fileName string) ([]string, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	file, err := os.Open(fileName)
 	if err != nil {
 		return nil, err
@@ -117,6 +129,8 @@ func ReadLines(fileName string) ([]string, error) {
 	return lines, scanner.Err()
 }
 func ParseProxyURL(proxy string) (*url.URL, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	proxyURL, err := url.Parse(proxy)

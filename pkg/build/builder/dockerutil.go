@@ -31,6 +31,8 @@ type DockerClient interface {
 func retryImageAction(actionName string, action func() error) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var err error
 	for retries := 0; retries <= DefaultPushOrPullRetryCount; retries++ {
 		err = action()
@@ -45,15 +47,21 @@ func retryImageAction(actionName string, action func() error) error {
 func removeImage(client DockerClient, name string) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return client.RemoveImage(name)
 }
 func tagImage(dockerClient DockerClient, image, name string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	repo, tag := docker.ParseRepositoryTag(name)
 	return dockerClient.TagImage(image, docker.TagImageOptions{Repo: repo, Tag: tag, Force: true})
 }
 func readInt64(filePath string) (int64, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	data, err := ioutil.ReadFile(filePath)
@@ -75,6 +83,8 @@ func readInt64(filePath string) (int64, error) {
 func extractParentFromCgroupMap(cgMap map[string]string) (string, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	memory, ok := cgMap["memory"]
 	if !ok {
 		return "", fmt.Errorf("could not find memory cgroup subsystem in map %v", cgMap)
@@ -94,6 +104,8 @@ func extractParentFromCgroupMap(cgMap map[string]string) (string, error) {
 	return cgroupParent, nil
 }
 func GetDockerAuthConfiguration(path string) (*docker.AuthConfigurations, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	glog.V(2).Infof("Checking for Docker config file for %s in path %s", dockercfg.PullAuthType, path)

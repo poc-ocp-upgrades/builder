@@ -24,6 +24,8 @@ import (
 func pullDaemonlessImage(sc types.SystemContext, store storage.Store, imageName string, authConfig docker.AuthConfiguration, blobCacheDirectory string) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	glog.V(2).Infof("Asked to pull fresh copy of %q.", imageName)
 	if imageName == "" {
 		return fmt.Errorf("unable to pull using empty image name")
@@ -52,6 +54,8 @@ func pullDaemonlessImage(sc types.SystemContext, store storage.Store, imageName 
 	return buildah.Pull(context.TODO(), "docker://"+imageName, options)
 }
 func buildDaemonlessImage(sc types.SystemContext, store storage.Store, isolation buildah.Isolation, contextDir string, optimization buildapiv1.ImageOptimizationPolicy, opts *docker.BuildImageOptions, blobCacheDirectory string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	glog.V(2).Infof("Building...")
@@ -93,6 +97,8 @@ func buildDaemonlessImage(sc types.SystemContext, store storage.Store, isolation
 func tagDaemonlessImage(sc types.SystemContext, store storage.Store, buildTag, pushTag string) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	glog.V(2).Infof("Tagging local image %q with name %q.", buildTag, pushTag)
 	if buildTag == "" {
 		return fmt.Errorf("unable to add tag to image with empty image name")
@@ -114,6 +120,8 @@ func tagDaemonlessImage(sc types.SystemContext, store storage.Store, buildTag, p
 	return nil
 }
 func removeDaemonlessImage(sc types.SystemContext, store storage.Store, buildTag string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	glog.V(2).Infof("Removing name %q from local image.", buildTag)
@@ -142,6 +150,8 @@ func removeDaemonlessImage(sc types.SystemContext, store storage.Store, buildTag
 func pushDaemonlessImage(sc types.SystemContext, store storage.Store, imageName string, authConfig docker.AuthConfiguration, blobCacheDirectory string) (string, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	glog.V(2).Infof("Pushing image %q from local storage.", imageName)
 	if imageName == "" {
 		return "", fmt.Errorf("unable to push using empty destination image name")
@@ -163,6 +173,8 @@ func pushDaemonlessImage(sc types.SystemContext, store storage.Store, imageName 
 	return string(digest), err
 }
 func inspectDaemonlessImage(sc types.SystemContext, store storage.Store, name string) (*docker.Image, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	systemContext := sc
@@ -212,6 +224,8 @@ func inspectDaemonlessImage(sc types.SystemContext, store storage.Store, name st
 func daemonlessRun(ctx context.Context, store storage.Store, isolation buildah.Isolation, createOpts docker.CreateContainerOptions, attachOpts docker.AttachToContainerOptions, blobCacheDirectory string) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if createOpts.Config == nil {
 		return fmt.Errorf("error calling daemonlessRun: expected a Config")
 	}
@@ -247,6 +261,8 @@ type DaemonlessClient struct {
 func GetDaemonlessClient(systemContext types.SystemContext, store storage.Store, isolationSpec, blobCacheDirectory string) (client DockerClient, err error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	isolation := buildah.IsolationDefault
 	switch strings.ToLower(isolationSpec) {
 	case "chroot":
@@ -267,9 +283,13 @@ func GetDaemonlessClient(systemContext types.SystemContext, store storage.Store,
 func (d *DaemonlessClient) BuildImage(opts docker.BuildImageOptions) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return buildDaemonlessImage(d.SystemContext, d.Store, d.Isolation, opts.ContextDir, buildapiv1.ImageOptimizationNone, &opts, d.BlobCacheDirectory)
 }
 func (d *DaemonlessClient) PushImage(opts docker.PushImageOptions, auth docker.AuthConfiguration) (string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	imageName := opts.Name
@@ -281,9 +301,13 @@ func (d *DaemonlessClient) PushImage(opts docker.PushImageOptions, auth docker.A
 func (d *DaemonlessClient) RemoveImage(name string) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return removeDaemonlessImage(d.SystemContext, d.Store, name)
 }
 func (d *DaemonlessClient) CreateContainer(opts docker.CreateContainerOptions) (*docker.Container, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	options := buildah.BuilderOptions{FromImage: opts.Config.Image, Container: opts.Name, PullBlobDirectory: d.BlobCacheDirectory}
@@ -302,6 +326,8 @@ func (d *DaemonlessClient) CreateContainer(opts docker.CreateContainerOptions) (
 	return &docker.Container{ID: builder.ContainerID}, nil
 }
 func (d *DaemonlessClient) RemoveContainer(opts docker.RemoveContainerOptions) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	builder, ok := d.builders[opts.ID]
@@ -328,6 +354,8 @@ func (d *DaemonlessClient) RemoveContainer(opts docker.RemoveContainerOptions) e
 func (d *DaemonlessClient) PullImage(opts docker.PullImageOptions, auth docker.AuthConfiguration) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	imageName := opts.Repository
 	if opts.Tag != "" {
 		imageName = imageName + ":" + opts.Tag
@@ -337,6 +365,8 @@ func (d *DaemonlessClient) PullImage(opts docker.PullImageOptions, auth docker.A
 func (d *DaemonlessClient) TagImage(name string, opts docker.TagImageOptions) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	imageName := opts.Repo
 	if opts.Tag != "" {
 		imageName = imageName + ":" + opts.Tag
@@ -344,6 +374,8 @@ func (d *DaemonlessClient) TagImage(name string, opts docker.TagImageOptions) er
 	return tagDaemonlessImage(d.SystemContext, d.Store, name, imageName)
 }
 func (d *DaemonlessClient) InspectImage(name string) (*docker.Image, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return inspectDaemonlessImage(d.SystemContext, d.Store, name)

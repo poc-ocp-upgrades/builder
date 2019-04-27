@@ -12,6 +12,8 @@ import (
 func secretDir(t *testing.T, files ...string) string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	dir, err := ioutil.TempDir("", "test")
 	if err != nil {
 		t.Fatalf("error creating temp dir: %v", err)
@@ -25,6 +27,8 @@ func secretDir(t *testing.T, files ...string) string {
 	return dir
 }
 func cleanupConfig(config string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if len(config) == 0 {
@@ -45,9 +49,13 @@ func cleanupConfig(config string) {
 func cleanupDir(path string) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	os.RemoveAll(path)
 }
 func validateConfig(t *testing.T, config string, search string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if len(config) == 0 {
@@ -66,6 +74,8 @@ func validateConfig(t *testing.T, config string, search string) {
 	}
 }
 func validateConfigContent(t *testing.T, config string, search string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	lines, err := builder.ReadLines(config)
