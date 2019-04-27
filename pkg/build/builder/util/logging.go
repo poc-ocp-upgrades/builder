@@ -3,10 +3,8 @@ package util
 import (
 	"net/url"
 	"regexp"
-
 	s2iapi "github.com/openshift/source-to-image/pkg/api"
 	s2iutil "github.com/openshift/source-to-image/pkg/util"
-
 	buildapiv1 "github.com/openshift/api/build/v1"
 	corev1 "k8s.io/api/core/v1"
 )
@@ -15,9 +13,9 @@ var (
 	proxyRegex = regexp.MustCompile("(?i)proxy")
 )
 
-// SafeForLoggingURL removes the user:password section of
-// a url if present.  If not present the value is returned unchanged.
 func SafeForLoggingURL(u *url.URL) *url.URL {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if u == nil {
 		return nil
 	}
@@ -32,10 +30,9 @@ func SafeForLoggingURL(u *url.URL) *url.URL {
 	}
 	return newURL
 }
-
-// SafeForLoggingEnvVar returns a copy of an EnvVar array with
-// proxy credential values redacted.
 func SafeForLoggingEnvVar(env []corev1.EnvVar) []corev1.EnvVar {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	newEnv := make([]corev1.EnvVar, len(env))
 	copy(newEnv, env)
 	for i, env := range newEnv {
@@ -45,23 +42,20 @@ func SafeForLoggingEnvVar(env []corev1.EnvVar) []corev1.EnvVar {
 	}
 	return newEnv
 }
-
-// SafeForLoggingBuildCommonSpec returns a copy of a CommonSpec with
-// proxy credential env variable values redacted.
 func SafeForLoggingBuildCommonSpec(spec *buildapiv1.CommonSpec) *buildapiv1.CommonSpec {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	newSpec := spec.DeepCopy()
 	if newSpec.Source.Git != nil {
 		if newSpec.Source.Git.HTTPProxy != nil {
 			s, _ := s2iutil.SafeForLoggingURL(*newSpec.Source.Git.HTTPProxy)
 			newSpec.Source.Git.HTTPProxy = &s
 		}
-
 		if newSpec.Source.Git.HTTPSProxy != nil {
 			s, _ := s2iutil.SafeForLoggingURL(*newSpec.Source.Git.HTTPSProxy)
 			newSpec.Source.Git.HTTPSProxy = &s
 		}
 	}
-
 	if newSpec.Strategy.SourceStrategy != nil {
 		newSpec.Strategy.SourceStrategy.Env = SafeForLoggingEnvVar(newSpec.Strategy.SourceStrategy.Env)
 	}
@@ -76,19 +70,17 @@ func SafeForLoggingBuildCommonSpec(spec *buildapiv1.CommonSpec) *buildapiv1.Comm
 	}
 	return newSpec
 }
-
-// SafeForLoggingBuild returns a copy of a Build with
-// proxy credentials redacted.
 func SafeForLoggingBuild(build *buildapiv1.Build) *buildapiv1.Build {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	newBuild := *build
 	newSpec := SafeForLoggingBuildCommonSpec(&build.Spec.CommonSpec)
 	newBuild.Spec.CommonSpec = *newSpec
 	return &newBuild
 }
-
-// SafeForLoggingEnvironmentList returns a copy of an s2i EnvironmentList array with
-// proxy credential values redacted.
 func SafeForLoggingEnvironmentList(env s2iapi.EnvironmentList) s2iapi.EnvironmentList {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	newEnv := make(s2iapi.EnvironmentList, len(env))
 	copy(newEnv, env)
 	proxyRegex := regexp.MustCompile("(?i)proxy")
@@ -99,10 +91,9 @@ func SafeForLoggingEnvironmentList(env s2iapi.EnvironmentList) s2iapi.Environmen
 	}
 	return newEnv
 }
-
-// SafeForLoggingS2IConfig returns a copy of an s2i Config with
-// proxy credentials redacted.
 func SafeForLoggingS2IConfig(config *s2iapi.Config) *s2iapi.Config {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	newConfig := *config
 	newConfig.Environment = SafeForLoggingEnvironmentList(config.Environment)
 	if config.ScriptDownloadProxyConfig != nil {
@@ -111,7 +102,6 @@ func SafeForLoggingS2IConfig(config *s2iapi.Config) *s2iapi.Config {
 		if newConfig.ScriptDownloadProxyConfig.HTTPProxy != nil {
 			newConfig.ScriptDownloadProxyConfig.HTTPProxy = SafeForLoggingURL(newConfig.ScriptDownloadProxyConfig.HTTPProxy)
 		}
-
 		if newConfig.ScriptDownloadProxyConfig.HTTPProxy != nil {
 			newConfig.ScriptDownloadProxyConfig.HTTPSProxy = SafeForLoggingURL(newConfig.ScriptDownloadProxyConfig.HTTPProxy)
 		}

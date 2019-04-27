@@ -6,32 +6,32 @@ import (
 	"testing"
 )
 
-type testAuth struct {
-	name string
-}
+type testAuth struct{ name string }
 
 func (a *testAuth) Name() string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return a.name
 }
-
 func (a *testAuth) Handles(name string) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return name == a.name
 }
-
 func (a *testAuth) Setup(baseDir string, context SCMAuthContext) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	context.Set(a.name, "test")
 	return nil
 }
-
 func scmAuths() SCMAuths {
-	return SCMAuths{
-		&testAuth{name: "one"},
-		&testAuth{name: "two"},
-		&testAuth{name: "three"},
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return SCMAuths{&testAuth{name: "one"}, &testAuth{name: "two"}, &testAuth{name: "three"}}
 }
-
 func TestPresent(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	secretDir := secretDir(t, "one", "three")
 	defer os.RemoveAll(secretDir)
 	files, err := ioutil.ReadDir(secretDir)
@@ -42,15 +42,15 @@ func TestPresent(t *testing.T) {
 	if len(result) != 2 {
 		t.Errorf("Unexpected result: %#v", result)
 	}
-	// Ensure that two is not present in result
 	for _, a := range result {
 		if a.Name() == "two" {
 			t.Errorf("Found unexpected auth")
 		}
 	}
 }
-
 func TestSetup(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	secretDir := secretDir(t, "one", "two", "three")
 	defer os.RemoveAll(secretDir)
 	env, _, err := scmAuths().Setup(secretDir)

@@ -13,19 +13,19 @@ import (
 	"strings"
 	"testing"
 	"time"
-
 	buildapiv1 "github.com/openshift/api/build/v1"
 	"github.com/openshift/builder/pkg/build/builder/timing"
 	"github.com/openshift/library-go/pkg/git"
 )
 
 func TestCheckRemoteGit(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 	}))
 	defer server.Close()
 	gitRepo := git.NewRepositoryWithEnv([]string{"GIT_ASKPASS=true", fmt.Sprintf("HOME=%s", os.TempDir())})
-
 	var err error
 	err = checkRemoteGit(gitRepo, server.URL, 10*time.Second)
 	switch v := err.(type) {
@@ -33,7 +33,6 @@ func TestCheckRemoteGit(t *testing.T) {
 	default:
 		t.Errorf("expected gitAuthError, got %q", v)
 	}
-
 	err = checkRemoteGit(gitRepo, "https://github.com/openshift/origin", 10*time.Second)
 	if err != nil {
 		t.Errorf("unexpected error %q", err)
@@ -41,13 +40,15 @@ func TestCheckRemoteGit(t *testing.T) {
 }
 
 type testGitRepo struct {
-	Name      string
-	Path      string
-	Files     []string
-	Submodule *testGitRepo
+	Name		string
+	Path		string
+	Files		[]string
+	Submodule	*testGitRepo
 }
 
 func initializeTestGitRepo(name string) (*testGitRepo, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	repo := &testGitRepo{Name: name}
 	dir, err := ioutil.TempDir("", "test-"+repo.Name)
 	if err != nil {
@@ -64,7 +65,6 @@ func initializeTestGitRepo(name string) (*testGitRepo, error) {
 	if out, err := initCmd.CombinedOutput(); err != nil {
 		return repo, fmt.Errorf("unable to initialize repository: %q", out)
 	}
-
 	configEmailCmd := exec.Command("git", "config", "user.email", "me@example.com")
 	configEmailCmd.Dir = dir
 	if out, err := configEmailCmd.CombinedOutput(); err != nil {
@@ -75,11 +75,11 @@ func initializeTestGitRepo(name string) (*testGitRepo, error) {
 	if out, err := configNameCmd.CombinedOutput(); err != nil {
 		return repo, fmt.Errorf("unable to set git name prefs: %q", out)
 	}
-
 	return repo, nil
 }
-
 func (r *testGitRepo) addSubmodule() error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	subRepo, err := initializeTestGitRepo("submodule")
 	if err != nil {
 		return err
@@ -95,10 +95,9 @@ func (r *testGitRepo) addSubmodule() error {
 	r.Submodule = subRepo
 	return nil
 }
-
-// getRef returns the sha256 of the commit specified by the negative offset.
-// The '0' is the current HEAD.
 func (r *testGitRepo) getRef(offset int) (string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	q := ""
 	for i := offset; i != 0; i++ {
 		q += "^"
@@ -111,8 +110,9 @@ func (r *testGitRepo) getRef(offset int) (string, error) {
 		return strings.TrimSpace(string(out)), nil
 	}
 }
-
 func (r *testGitRepo) createBranch(name string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	refCmd := exec.Command("git", "checkout", "-b", name)
 	refCmd.Dir = r.Path
 	if out, err := refCmd.CombinedOutput(); err != nil {
@@ -120,8 +120,9 @@ func (r *testGitRepo) createBranch(name string) error {
 	}
 	return nil
 }
-
 func (r *testGitRepo) switchBranch(name string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	refCmd := exec.Command("git", "checkout", name)
 	refCmd.Dir = r.Path
 	if out, err := refCmd.CombinedOutput(); err != nil {
@@ -129,15 +130,17 @@ func (r *testGitRepo) switchBranch(name string) error {
 	}
 	return nil
 }
-
 func (r *testGitRepo) cleanup() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	os.RemoveAll(r.Path)
 	if r.Submodule != nil {
 		os.RemoveAll(r.Submodule.Path)
 	}
 }
-
 func (r *testGitRepo) addCommit() error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	f, err := ioutil.TempFile(r.Path, "")
 	if err != nil {
 		return err
@@ -159,8 +162,9 @@ func (r *testGitRepo) addCommit() error {
 	r.Files = append(r.Files, f.Name())
 	return nil
 }
-
 func TestUnqualifiedClone(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	repo, err := initializeTestGitRepo("unqualified")
 	defer repo.cleanup()
 	if err != nil {
@@ -169,7 +173,6 @@ func TestUnqualifiedClone(t *testing.T) {
 	if err := repo.addSubmodule(); err != nil {
 		t.Errorf("%v", err)
 	}
-	// add two commits to check that shallow clone take account
 	if err := repo.addCommit(); err != nil {
 		t.Errorf("unable to add commit: %v", err)
 	}
@@ -199,8 +202,9 @@ func TestUnqualifiedClone(t *testing.T) {
 		}
 	}
 }
-
 func TestCloneFromRef(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	repo, err := initializeTestGitRepo("commit")
 	defer repo.cleanup()
 	if err != nil {
@@ -209,7 +213,6 @@ func TestCloneFromRef(t *testing.T) {
 	if err := repo.addSubmodule(); err != nil {
 		t.Errorf("%v", err)
 	}
-	// add two commits to check that shallow clone take account
 	if err := repo.addCommit(); err != nil {
 		t.Errorf("unable to add commit: %v", err)
 	}
@@ -223,10 +226,7 @@ func TestCloneFromRef(t *testing.T) {
 	if err != nil {
 		t.Errorf("%v", err)
 	}
-	source := &buildapiv1.GitBuildSource{
-		URI: "file://" + repo.Path,
-		Ref: firstCommitRef,
-	}
+	source := &buildapiv1.GitBuildSource{URI: "file://" + repo.Path, Ref: firstCommitRef}
 	revision := buildapiv1.SourceRevision{Git: &buildapiv1.GitSourceRevision{}}
 	ctx := timing.NewContext(context.Background())
 	if _, err = extractGitSource(ctx, client, source, &revision, destDir, 10*time.Second); err != nil {
@@ -249,8 +249,9 @@ func TestCloneFromRef(t *testing.T) {
 		}
 	}
 }
-
 func TestCloneFromBranch(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	repo, err := initializeTestGitRepo("branch")
 	defer repo.cleanup()
 	if err != nil {
@@ -259,7 +260,6 @@ func TestCloneFromBranch(t *testing.T) {
 	if err := repo.addSubmodule(); err != nil {
 		t.Errorf("%v", err)
 	}
-	// add two commits to check that shallow clone take account
 	if err := repo.addCommit(); err != nil {
 		t.Errorf("unable to add commit: %v", err)
 	}
@@ -278,10 +278,7 @@ func TestCloneFromBranch(t *testing.T) {
 	destDir, err := ioutil.TempDir("", "branch-dest-")
 	defer os.RemoveAll(destDir)
 	client := git.NewRepositoryWithEnv([]string{})
-	source := &buildapiv1.GitBuildSource{
-		URI: "file://" + repo.Path,
-		Ref: "test",
-	}
+	source := &buildapiv1.GitBuildSource{URI: "file://" + repo.Path, Ref: "test"}
 	revision := buildapiv1.SourceRevision{Git: &buildapiv1.GitSourceRevision{}}
 	ctx := timing.NewContext(context.Background())
 	if _, err = extractGitSource(ctx, client, source, &revision, destDir, 10*time.Second); err != nil {
@@ -304,82 +301,18 @@ func TestCloneFromBranch(t *testing.T) {
 		}
 	}
 }
-
 func TestCopyImageSourceFromFilesystem(t *testing.T) {
-
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	testCases := []struct {
-		name        string
-		testFiles   map[string]string
-		testLinks   map[string]string
-		copyPath    string
-		destination string
-		verifyFiles map[string]string
-		verifyLinks map[string]string
-	}{
-		{
-			name: "single file",
-			testFiles: map[string]string{
-				"hello.txt": "Hello world!",
-			},
-			copyPath:    "hello.txt",
-			destination: "dst",
-			verifyFiles: map[string]string{
-				"dst/hello.txt": "Hello world!",
-			},
-		},
-		{
-			name:        "single symlink",
-			destination: "dst",
-			testFiles: map[string]string{
-				"src/hello.txt": "Hello world!",
-			},
-			testLinks: map[string]string{
-				"link/hello.txt": "../hello.txt",
-			},
-			copyPath: "link/hello.txt",
-			verifyLinks: map[string]string{
-				"dst/hello.txt": "../hello.txt",
-			},
-		},
-		{
-			name:        "path preserving parent directory",
-			copyPath:    "src",
-			destination: "dst",
-			testFiles: map[string]string{
-				"src/foo/hello.txt": "Hello world!",
-				"src/foo/foo.txt":   "bar",
-			},
-			testLinks: map[string]string{
-				"src/bar/link.txt": "../hello.txt",
-			},
-			verifyFiles: map[string]string{
-				"dst/src/foo/hello.txt": "Hello world!",
-				"dst/src/foo/foo.txt":   "bar",
-			},
-			verifyLinks: map[string]string{
-				"dst/src/bar/link.txt": "../hello.txt",
-			},
-		},
-		{
-			name:        "path removing parent directory",
-			copyPath:    "src/.",
-			destination: "dst",
-			testFiles: map[string]string{
-				"src/foo/hello.txt": "Hello world!",
-				"src/foo/foo.txt":   "bar",
-			},
-			testLinks: map[string]string{
-				"src/bar/link.txt": "../hello.txt",
-			},
-			verifyFiles: map[string]string{
-				"dst/foo/hello.txt": "Hello world!",
-				"dst/foo/foo.txt":   "bar",
-			},
-			verifyLinks: map[string]string{
-				"dst/bar/link.txt": "../hello.txt",
-			},
-		},
-	}
+		name		string
+		testFiles	map[string]string
+		testLinks	map[string]string
+		copyPath	string
+		destination	string
+		verifyFiles	map[string]string
+		verifyLinks	map[string]string
+	}{{name: "single file", testFiles: map[string]string{"hello.txt": "Hello world!"}, copyPath: "hello.txt", destination: "dst", verifyFiles: map[string]string{"dst/hello.txt": "Hello world!"}}, {name: "single symlink", destination: "dst", testFiles: map[string]string{"src/hello.txt": "Hello world!"}, testLinks: map[string]string{"link/hello.txt": "../hello.txt"}, copyPath: "link/hello.txt", verifyLinks: map[string]string{"dst/hello.txt": "../hello.txt"}}, {name: "path preserving parent directory", copyPath: "src", destination: "dst", testFiles: map[string]string{"src/foo/hello.txt": "Hello world!", "src/foo/foo.txt": "bar"}, testLinks: map[string]string{"src/bar/link.txt": "../hello.txt"}, verifyFiles: map[string]string{"dst/src/foo/hello.txt": "Hello world!", "dst/src/foo/foo.txt": "bar"}, verifyLinks: map[string]string{"dst/src/bar/link.txt": "../hello.txt"}}, {name: "path removing parent directory", copyPath: "src/.", destination: "dst", testFiles: map[string]string{"src/foo/hello.txt": "Hello world!", "src/foo/foo.txt": "bar"}, testLinks: map[string]string{"src/bar/link.txt": "../hello.txt"}, verifyFiles: map[string]string{"dst/foo/hello.txt": "Hello world!", "dst/foo/foo.txt": "bar"}, verifyLinks: map[string]string{"dst/bar/link.txt": "../hello.txt"}}}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			testDir, err := ioutil.TempDir("", "copy-src-from-fs")
@@ -417,8 +350,9 @@ func TestCopyImageSourceFromFilesystem(t *testing.T) {
 		})
 	}
 }
-
 func createTestFile(testDir string, filename string, content string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	file := filepath.Join(testDir, filename)
 	fileDir := filepath.Dir(file)
 	if _, err := os.Stat(fileDir); err != nil {
@@ -429,8 +363,9 @@ func createTestFile(testDir string, filename string, content string) error {
 	}
 	return ioutil.WriteFile(file, []byte(content), 0644)
 }
-
 func createTestSymlink(testDir string, linkname string, source string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	file := filepath.Join(testDir, linkname)
 	fileDir := filepath.Dir(file)
 	if _, err := os.Stat(fileDir); err != nil {
@@ -441,8 +376,9 @@ func createTestSymlink(testDir string, linkname string, source string) error {
 	}
 	return os.Symlink(source, file)
 }
-
 func verifyFile(filename string, expectedContent string, t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	info, err := os.Lstat(filename)
 	if err != nil {
 		t.Fatalf("failed to lstat %s: %v", filename, err)
@@ -465,8 +401,9 @@ func verifyFile(filename string, expectedContent string, t *testing.T) {
 		t.Errorf("file %s is not a regular file, mode is: %v", filename, mode)
 	}
 }
-
 func verifyLink(filename string, expectedSrc string, t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	info, err := os.Lstat(filename)
 	if err != nil {
 		t.Fatalf("failed to lstat %s: %v", filename, err)
@@ -478,7 +415,6 @@ func verifyLink(filename string, expectedSrc string, t *testing.T) {
 	case mode&os.ModeSymlink != 0:
 		linkSrc, err := os.Readlink(filename)
 		if err != nil {
-			// Should be able to read the symlink
 			t.Errorf("failed to read symlink for %s: %v", filename, err)
 		}
 		if linkSrc != expectedSrc {

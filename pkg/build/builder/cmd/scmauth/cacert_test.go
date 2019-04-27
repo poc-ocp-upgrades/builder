@@ -3,11 +3,12 @@ package scmauth
 import (
 	"os"
 	"testing"
-
 	"github.com/openshift/source-to-image/pkg/scm/git"
 )
 
 func TestCACertHandles(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	caCert := &CACert{}
 	if !caCert.Handles("ca.crt") {
 		t.Errorf("should handle ca.crt")
@@ -16,15 +17,13 @@ func TestCACertHandles(t *testing.T) {
 		t.Errorf("should not handle username")
 	}
 }
-
 func TestCACertSetup(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	context := NewDefaultSCMContext()
-	caCert := &CACert{
-		SourceURL: *git.MustParse("https://my.host/git/repo"),
-	}
+	caCert := &CACert{SourceURL: *git.MustParse("https://my.host/git/repo")}
 	secretDir := secretDir(t, "ca.crt")
 	defer os.RemoveAll(secretDir)
-
 	err := caCert.Setup(secretDir, context)
 	gitConfig, _ := context.Get("GIT_CONFIG")
 	defer cleanupConfig(gitConfig)
@@ -33,15 +32,13 @@ func TestCACertSetup(t *testing.T) {
 	}
 	validateConfig(t, gitConfig, "sslCAInfo")
 }
-
 func TestCACertSetupNoSSL(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	context := NewDefaultSCMContext()
-	caCert := &CACert{
-		SourceURL: *git.MustParse("http://my.host/git/repo"),
-	}
+	caCert := &CACert{SourceURL: *git.MustParse("http://my.host/git/repo")}
 	secretDir := secretDir(t, "ca.crt")
 	defer os.RemoveAll(secretDir)
-
 	err := caCert.Setup(secretDir, context)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
