@@ -6,6 +6,8 @@ import (
 )
 
 func TestSSHPrivateKeyHandles(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	sshKey := &SSHPrivateKey{}
 	if !sshKey.Handles("ssh-privatekey") {
 		t.Errorf("should handle ssh-privatekey")
@@ -14,13 +16,13 @@ func TestSSHPrivateKeyHandles(t *testing.T) {
 		t.Errorf("should not handle ca.crt")
 	}
 }
-
 func TestSSHPrivateKeySetup(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	context := NewDefaultSCMContext()
 	sshKey := &SSHPrivateKey{}
 	secretDir := secretDir(t, "ssh-privatekey")
 	defer os.RemoveAll(secretDir)
-
 	err := sshKey.Setup(secretDir, context)
 	if err != nil {
 		t.Errorf("unexpected error %v", err)

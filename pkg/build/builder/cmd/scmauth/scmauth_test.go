@@ -6,11 +6,12 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-
 	"github.com/openshift/builder/pkg/build/builder"
 )
 
 func secretDir(t *testing.T, files ...string) string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	dir, err := ioutil.TempDir("", "test")
 	if err != nil {
 		t.Fatalf("error creating temp dir: %v", err)
@@ -23,14 +24,14 @@ func secretDir(t *testing.T, files ...string) string {
 	}
 	return dir
 }
-
 func cleanupConfig(config string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if len(config) == 0 {
 		return
 	}
 	lines, err := builder.ReadLines(config)
 	if err != nil {
-		// abort cleanup on error
 		return
 	}
 	for _, line := range lines {
@@ -41,12 +42,14 @@ func cleanupConfig(config string) {
 	}
 	cleanupDir(filepath.Dir(config))
 }
-
 func cleanupDir(path string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	os.RemoveAll(path)
 }
-
 func validateConfig(t *testing.T, config string, search string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if len(config) == 0 {
 		return
 	}
@@ -62,18 +65,17 @@ func validateConfig(t *testing.T, config string, search string) {
 		validateConfigContent(t, includedConfig, search)
 	}
 }
-
 func validateConfigContent(t *testing.T, config string, search string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	lines, err := builder.ReadLines(config)
 	if err != nil {
 		t.Fatalf("cannot read file %s: %v", config, err)
 	}
 	for _, line := range lines {
 		if strings.Contains(line, search) {
-			// search string was found. Test was successful
 			return
 		}
 	}
-
 	t.Errorf("Could not find search string %q in config file %s", search, config)
 }

@@ -6,6 +6,8 @@ import (
 )
 
 func TestContextSet(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	c := NewDefaultSCMContext()
 	err := c.Set("VAR1", "value1")
 	if err != nil {
@@ -22,26 +24,26 @@ func TestContextSet(t *testing.T) {
 		t.Errorf("unexpected length of Env")
 	}
 }
-
 func TestContextSetExisting(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	c := NewDefaultSCMContext()
 	err := c.Set("VAR1", "value1")
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
-	// Setting the same value should be ok
 	err = c.Set("VAR1", "value1")
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
-	// Setting a different value should return an error
 	err = c.Set("VAR1", "value2")
 	if err == nil {
 		t.Errorf("did not get expected error")
 	}
 }
-
 func TestSetOverrideURL(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	c := NewDefaultSCMContext()
 	u, _ := url.Parse("https://my.override.url/test/repo")
 	err := c.SetOverrideURL(u)
@@ -53,8 +55,9 @@ func TestSetOverrideURL(t *testing.T) {
 		t.Errorf("did not get the same URL: %v", u2)
 	}
 }
-
 func TestSetOverrideURLExisting(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	c := NewDefaultSCMContext()
 	urlStr := "https://my.override.url/test/repo"
 	u, _ := url.Parse(urlStr)

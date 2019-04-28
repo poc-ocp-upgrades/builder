@@ -9,88 +9,39 @@ import (
 	"reflect"
 	"strings"
 	"testing"
-
 	"github.com/MakeNowJust/heredoc"
-
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/diff"
-
 	buildapiv1 "github.com/openshift/api/build/v1"
 	"github.com/openshift/builder/pkg/build/builder/util/dockerfile"
 	"github.com/openshift/library-go/pkg/git"
 )
 
 func TestBuildInfo(t *testing.T) {
-	b := &buildapiv1.Build{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "sample-app",
-			Namespace: "default",
-		},
-		Spec: buildapiv1.BuildSpec{
-			CommonSpec: buildapiv1.CommonSpec{
-				Source: buildapiv1.BuildSource{
-					Git: &buildapiv1.GitBuildSource{
-						URI: "github.com/openshift/sample-app",
-						Ref: "master",
-					},
-				},
-				Strategy: buildapiv1.BuildStrategy{
-					SourceStrategy: &buildapiv1.SourceBuildStrategy{
-						Env: []corev1.EnvVar{
-							{Name: "RAILS_ENV", Value: "production"},
-						},
-					},
-				},
-			},
-		},
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	b := &buildapiv1.Build{ObjectMeta: metav1.ObjectMeta{Name: "sample-app", Namespace: "default"}, Spec: buildapiv1.BuildSpec{CommonSpec: buildapiv1.CommonSpec{Source: buildapiv1.BuildSource{Git: &buildapiv1.GitBuildSource{URI: "github.com/openshift/sample-app", Ref: "master"}}, Strategy: buildapiv1.BuildStrategy{SourceStrategy: &buildapiv1.SourceBuildStrategy{Env: []corev1.EnvVar{{Name: "RAILS_ENV", Value: "production"}}}}}}}
 	sourceInfo := &git.SourceInfo{}
 	sourceInfo.CommitID = "1575a90c569a7cc0eea84fbd3304d9df37c9f5ee"
 	got := buildInfo(b, sourceInfo)
-	want := []KeyValue{
-		{"OPENSHIFT_BUILD_NAME", "sample-app"},
-		{"OPENSHIFT_BUILD_NAMESPACE", "default"},
-		{"OPENSHIFT_BUILD_SOURCE", "github.com/openshift/sample-app"},
-		{"OPENSHIFT_BUILD_REFERENCE", "master"},
-		{"OPENSHIFT_BUILD_COMMIT", "1575a90c569a7cc0eea84fbd3304d9df37c9f5ee"},
-		{"RAILS_ENV", "production"},
-	}
+	want := []KeyValue{{"OPENSHIFT_BUILD_NAME", "sample-app"}, {"OPENSHIFT_BUILD_NAMESPACE", "default"}, {"OPENSHIFT_BUILD_SOURCE", "github.com/openshift/sample-app"}, {"OPENSHIFT_BUILD_REFERENCE", "master"}, {"OPENSHIFT_BUILD_COMMIT", "1575a90c569a7cc0eea84fbd3304d9df37c9f5ee"}, {"RAILS_ENV", "production"}}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("buildInfo(%+v) = %+v; want %+v", b, got, want)
 	}
-
-	b.Spec.Revision = &buildapiv1.SourceRevision{
-		Git: &buildapiv1.GitSourceRevision{
-			Commit: "1575a90c569a7cc0eea84fbd3304d9df37c9f5ee",
-		},
-	}
+	b.Spec.Revision = &buildapiv1.SourceRevision{Git: &buildapiv1.GitSourceRevision{Commit: "1575a90c569a7cc0eea84fbd3304d9df37c9f5ee"}}
 	got = buildInfo(b, nil)
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("buildInfo(%+v) = %+v; want %+v", b, got, want)
 	}
-
 }
-
 func TestRandomBuildTag(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	tests := []struct {
-		namespace, name string
-		want            string
-	}{
-		{"test", "build-1", "temp.builder.openshift.io/test/build-1:f1f85ff5"},
-		// For long build namespace + build name, the returned random build tag
-		// would be longer than the limit of reference.NameTotalLengthMax (255
-		// chars). We do not truncate the repository name because it could create an
-		// invalid repository name (e.g., namespace=abc, name=d, repo=abc/d,
-		// trucated=abc/ -> invalid), so we simply take a SHA1 hash of the
-		// repository name (which is guaranteed to be a valid repository name) and
-		// preserve the random tag.
-		{
-			"namespace" + strings.Repeat(".namespace", 20),
-			"name" + strings.Repeat(".name", 20),
-			"8a0f9d66cde28a0ebb1e3ee8ef9a484ce687afe0:f1f85ff5",
-		},
-	}
+		namespace, name	string
+		want		string
+	}{{"test", "build-1", "temp.builder.openshift.io/test/build-1:f1f85ff5"}, {"namespace" + strings.Repeat(".namespace", 20), "name" + strings.Repeat(".name", 20), "8a0f9d66cde28a0ebb1e3ee8ef9a484ce687afe0:f1f85ff5"}}
 	for _, tt := range tests {
 		rand.Seed(0)
 		got := randomBuildTag(tt.namespace, tt.name)
@@ -99,8 +50,9 @@ func TestRandomBuildTag(t *testing.T) {
 		}
 	}
 }
-
 func TestRandomBuildTagNoDupes(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	rand.Seed(0)
 	previous := make(map[string]struct{})
 	for i := 0; i < 100; i++ {
@@ -112,8 +64,9 @@ func TestRandomBuildTagNoDupes(t *testing.T) {
 		previous[tag] = struct{}{}
 	}
 }
-
 func TestContainerName(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	rand.Seed(0)
 	got := containerName("test-strategy", "my-build", "ns", "hook")
 	want := "openshift_test-strategy-build_my-build_ns_hook_f1f85ff5"
@@ -121,57 +74,13 @@ func TestContainerName(t *testing.T) {
 		t.Errorf("got %v, want %v", got, want)
 	}
 }
-
 func TestBuildPostCommit(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	tests := []struct {
-		postCommit buildapiv1.BuildPostCommitSpec
-		want       string
-	}{
-		{
-			postCommit: buildapiv1.BuildPostCommitSpec{
-				Command: []string{"echo", "hello"},
-			},
-			want: "echo hello",
-		},
-		{
-			postCommit: buildapiv1.BuildPostCommitSpec{
-				Command: []string{"ls"},
-				Args:    []string{"-l", "/tmp/hello"}},
-			want: "ls -l /tmp/hello",
-		},
-		{
-			postCommit: buildapiv1.BuildPostCommitSpec{
-				Script: "echo hello $1 world",
-			},
-			want: "/bin/sh -ic 'echo hello $1 world'",
-		},
-		{
-			postCommit: buildapiv1.BuildPostCommitSpec{
-				Script: "echo",
-				Args:   []string{"hello", "$1", "world"},
-			},
-			want: "/bin/sh -ic 'echo hello $1 world'",
-		},
-		{
-			postCommit: buildapiv1.BuildPostCommitSpec{
-				Command: []string{"echo", "hello", "$1", "world"},
-			},
-			want: "echo hello $1 world",
-		},
-		{
-			postCommit: buildapiv1.BuildPostCommitSpec{
-				Command: []string{"echo"},
-				Args:    []string{"hello", "$1", "world"},
-			},
-			want: "echo hello $1 world",
-		},
-		{
-			postCommit: buildapiv1.BuildPostCommitSpec{
-				Script: "echo hello $1 world",
-			},
-			want: "/bin/sh -ic 'echo hello $1 world'",
-		},
-	}
+		postCommit	buildapiv1.BuildPostCommitSpec
+		want		string
+	}{{postCommit: buildapiv1.BuildPostCommitSpec{Command: []string{"echo", "hello"}}, want: "echo hello"}, {postCommit: buildapiv1.BuildPostCommitSpec{Command: []string{"ls"}, Args: []string{"-l", "/tmp/hello"}}, want: "ls -l /tmp/hello"}, {postCommit: buildapiv1.BuildPostCommitSpec{Script: "echo hello $1 world"}, want: "/bin/sh -ic 'echo hello $1 world'"}, {postCommit: buildapiv1.BuildPostCommitSpec{Script: "echo", Args: []string{"hello", "$1", "world"}}, want: "/bin/sh -ic 'echo hello $1 world'"}, {postCommit: buildapiv1.BuildPostCommitSpec{Command: []string{"echo", "hello", "$1", "world"}}, want: "echo hello $1 world"}, {postCommit: buildapiv1.BuildPostCommitSpec{Command: []string{"echo"}, Args: []string{"hello", "$1", "world"}}, want: "echo hello $1 world"}, {postCommit: buildapiv1.BuildPostCommitSpec{Script: "echo hello $1 world"}, want: "/bin/sh -ic 'echo hello $1 world'"}}
 	for i, test := range tests {
 		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
 			got := buildPostCommit(test.postCommit)
@@ -181,291 +90,144 @@ func TestBuildPostCommit(t *testing.T) {
 		})
 	}
 }
-
 func Test_addBuildParameters(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	type want struct {
-		Err bool
-		Out string
+		Err	bool
+		Out	string
 	}
 	tests := []struct {
-		original string
-		from     *corev1.ObjectReference
-		build    []buildapiv1.ImageSource
-		want     want
-	}{
-		{
-			original: `# no FROM instruction`,
-			want:     want{},
-		},
-		{
-			original: heredoc.Doc(`
+		original	string
+		from		*corev1.ObjectReference
+		build		[]buildapiv1.ImageSource
+		want		want
+	}{{original: `# no FROM instruction`, want: want{}}, {original: heredoc.Doc(`
 				FROM scratch
 				# FROM busybox
 				RUN echo "hello world"
-				`),
-			want: want{
-				Out: heredoc.Doc(`
+				`), want: want{Out: heredoc.Doc(`
 				FROM scratch
 				RUN echo "hello world"
-				`),
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`)}}, {original: heredoc.Doc(`
 				FROM scratch
 				FROM busybox
 				RUN echo "hello world"
-				`),
-			want: want{
-				Out: heredoc.Doc(`
+				`), want: want{Out: heredoc.Doc(`
 				FROM scratch
 				FROM busybox
 				RUN echo "hello world"
-				`),
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`)}}, {original: heredoc.Doc(`
 				FROM scratch as test
 				FROM busybox
 				RUN echo "hello world"
-				`),
-			want: want{
-				Out: heredoc.Doc(`
+				`), want: want{Out: heredoc.Doc(`
 				FROM scratch as test
 				FROM busybox
 				RUN echo "hello world"
-				`),
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`)}}, {original: heredoc.Doc(`
 				FROM scratch as test
 				FROM busybox
 				COPY --from=test /a /b
 				COPY --from=nginx /a /c
 				COPY --from=nginx:latest /a /c
 				RUN echo "hello world"
-				`),
-			want: want{
-				Out: heredoc.Doc(`
+				`), want: want{Out: heredoc.Doc(`
 				FROM scratch as test
 				FROM busybox
 				COPY --from=test /a /b
 				COPY --from=nginx /a /c
 				COPY --from=nginx:latest /a /c
 				RUN echo "hello world"
-				`),
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`)}}, {original: heredoc.Doc(`
 				FROM scratch as test
 				COPY -from=test /a /b
-				`),
-			want: want{
-				Out: heredoc.Doc(`
+				`), want: want{Out: heredoc.Doc(`
 				FROM scratch as test
 				COPY -from=test /a /b
-				`),
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`)}}, {original: heredoc.Doc(`
 				FROM scratch as test
 				COPY --from=test:latest /a /b
-				`),
-			build: []buildapiv1.ImageSource{
-				{From: corev1.ObjectReference{Kind: "DockerImage", Name: "nginx:latest"}},
-			},
-			want: want{
-				Out: heredoc.Doc(`
+				`), build: []buildapiv1.ImageSource{{From: corev1.ObjectReference{Kind: "DockerImage", Name: "nginx:latest"}}}, want: want{Out: heredoc.Doc(`
 				FROM scratch as test
 				COPY --from=test:latest /a /b
-				`),
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`)}}, {original: heredoc.Doc(`
 				FROM scratch as test
 				COPY --from=test:latest /a /b
-				`),
-			build: []buildapiv1.ImageSource{
-				{From: corev1.ObjectReference{Kind: "DockerImage", Name: "nginx:latest"}, As: []string{"test"}},
-			},
-			want: want{
-				Out: heredoc.Doc(`
+				`), build: []buildapiv1.ImageSource{{From: corev1.ObjectReference{Kind: "DockerImage", Name: "nginx:latest"}, As: []string{"test"}}}, want: want{Out: heredoc.Doc(`
 				FROM scratch as test
 				COPY --from=test:latest /a /b
-				`),
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`)}}, {original: heredoc.Doc(`
 				FROM scratch as test
 				FROM other
 				COPY --from=test /a /b
-				`),
-			build: []buildapiv1.ImageSource{
-				{From: corev1.ObjectReference{Kind: "DockerImage", Name: "nginx:latest"}, As: []string{"test"}},
-			},
-			want: want{
-				Out: heredoc.Doc(`
+				`), build: []buildapiv1.ImageSource{{From: corev1.ObjectReference{Kind: "DockerImage", Name: "nginx:latest"}, As: []string{"test"}}}, want: want{Out: heredoc.Doc(`
 				FROM scratch as test
 				FROM other
 				COPY --from=test /a /b
-				`),
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`)}}, {original: heredoc.Doc(`
 				FROM scratch as test
 				COPY --from=test:latest /a /b
-				`),
-			build: []buildapiv1.ImageSource{
-				{From: corev1.ObjectReference{Kind: "DockerImage", Name: "nginx:latest"}, As: []string{"test:latest"}},
-			},
-			want: want{
-				Out: heredoc.Doc(`
+				`), build: []buildapiv1.ImageSource{{From: corev1.ObjectReference{Kind: "DockerImage", Name: "nginx:latest"}, As: []string{"test:latest"}}}, want: want{Out: heredoc.Doc(`
 				FROM scratch as test
 				COPY --from=nginx:latest /a /b
-				`),
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`)}}, {original: heredoc.Doc(`
 				FROM scratch as test
 				COPY --from=test:latest /a /b
-				`),
-			from: &corev1.ObjectReference{
-				Kind: "DockerImage",
-				Name: "from-image:v1",
-			},
-			build: []buildapiv1.ImageSource{
-				{From: corev1.ObjectReference{Kind: "DockerImage", Name: "nginx:latest"}, As: []string{"scratch", "test:latest"}},
-			},
-			want: want{
-				Out: heredoc.Doc(`
+				`), from: &corev1.ObjectReference{Kind: "DockerImage", Name: "from-image:v1"}, build: []buildapiv1.ImageSource{{From: corev1.ObjectReference{Kind: "DockerImage", Name: "nginx:latest"}, As: []string{"scratch", "test:latest"}}}, want: want{Out: heredoc.Doc(`
 				FROM from-image:v1 as test
 				COPY --from=nginx:latest /a /b
-				`),
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`)}}, {original: heredoc.Doc(`
 				FROM scratch as test
 				COPY --from=test:latest /a /b
-				`),
-			from: &corev1.ObjectReference{
-				Kind: "DockerImage",
-				Name: "from-image:v1",
-			},
-			build: []buildapiv1.ImageSource{
-				{From: corev1.ObjectReference{Kind: "DockerImage", Name: "nginx:latest"}, As: []string{"scratch", "test:latest", "from-image:v1"}},
-			},
-			want: want{
-				Out: heredoc.Doc(`
+				`), from: &corev1.ObjectReference{Kind: "DockerImage", Name: "from-image:v1"}, build: []buildapiv1.ImageSource{{From: corev1.ObjectReference{Kind: "DockerImage", Name: "nginx:latest"}, As: []string{"scratch", "test:latest", "from-image:v1"}}}, want: want{Out: heredoc.Doc(`
 				FROM nginx:latest as test
 				COPY --from=nginx:latest /a /b
-				`),
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`)}}, {original: heredoc.Doc(`
 				FROM scratch as test
 				COPY --from=test:latest /a /b
-				`),
-			from: &corev1.ObjectReference{
-				Kind: "ImageStreamTag",
-				Name: "from-image:v1",
-			},
-			want: want{
-				Out: heredoc.Doc(`
+				`), from: &corev1.ObjectReference{Kind: "ImageStreamTag", Name: "from-image:v1"}, want: want{Out: heredoc.Doc(`
 				FROM scratch as test
 				COPY --from=test:latest /a /b
-				`),
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`)}}, {original: heredoc.Doc(`
 				FROM test
 				FROM scratch as test
 				COPY --from=test /a /b
-				`),
-			build: []buildapiv1.ImageSource{
-				{From: corev1.ObjectReference{Kind: "DockerImage", Name: "nginx:latest"}, As: []string{"test", "scratch"}},
-			},
-			want: want{
-				Out: heredoc.Doc(`
+				`), build: []buildapiv1.ImageSource{{From: corev1.ObjectReference{Kind: "DockerImage", Name: "nginx:latest"}, As: []string{"test", "scratch"}}}, want: want{Out: heredoc.Doc(`
 				FROM nginx:latest
 				FROM nginx:latest as test
 				COPY --from=test /a /b
-				`),
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`)}}, {original: heredoc.Doc(`
 				FROM other
 				COPY --from=test /a /b
 				FROM scratch as test
 				COPY --from=test /a /b
-				`),
-			build: []buildapiv1.ImageSource{
-				{From: corev1.ObjectReference{Kind: "DockerImage", Name: "nginx:latest"}, As: []string{"test", "scratch"}},
-			},
-			want: want{
-				Out: heredoc.Doc(`
+				`), build: []buildapiv1.ImageSource{{From: corev1.ObjectReference{Kind: "DockerImage", Name: "nginx:latest"}, As: []string{"test", "scratch"}}}, want: want{Out: heredoc.Doc(`
 				FROM other
 				COPY --from=nginx:latest /a /b
 				FROM nginx:latest as test
 				COPY --from=test /a /b
-				`),
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`)}}, {original: heredoc.Doc(`
 				FROM other
 				COPY --from=test /a /b
 				FROM scratch as test
 				COPY --from=test /a /b
-				`),
-			from: &corev1.ObjectReference{
-				Kind: "DockerImage",
-				Name: "nginx:v1",
-			},
-			build: []buildapiv1.ImageSource{
-				{From: corev1.ObjectReference{Kind: "DockerImage", Name: "nginx:latest"}, As: []string{"test", "scratch"}},
-			},
-			want: want{
-				Out: heredoc.Doc(`
+				`), from: &corev1.ObjectReference{Kind: "DockerImage", Name: "nginx:v1"}, build: []buildapiv1.ImageSource{{From: corev1.ObjectReference{Kind: "DockerImage", Name: "nginx:latest"}, As: []string{"test", "scratch"}}}, want: want{Out: heredoc.Doc(`
 				FROM other
 				COPY --from=nginx:latest /a /b
 				FROM nginx:v1 as test
 				COPY --from=test /a /b
-				`),
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`)}}, {original: heredoc.Doc(`
 				FROM other
 				COPY --from=test /a /b
 				FROM scratch as test
 				COPY --from=test /a /b
-				`),
-			from: &corev1.ObjectReference{
-				Kind: "DockerImage",
-				Name: "nginx:v1",
-			},
-			want: want{
-				Out: heredoc.Doc(`
+				`), from: &corev1.ObjectReference{Kind: "DockerImage", Name: "nginx:v1"}, want: want{Out: heredoc.Doc(`
 				FROM other
 				COPY --from=test /a /b
 				FROM nginx:v1 as test
 				COPY --from=test /a /b
-				`),
-			},
-		},
-	}
+				`)}}}
 	for i, test := range tests {
 		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
 			f, err := ioutil.TempFile("", "builder-dockertest")
@@ -485,9 +247,7 @@ func Test_addBuildParameters(t *testing.T) {
 				t.Fatal(err)
 			}
 			build := &buildapiv1.Build{}
-			build.Spec.Strategy.DockerStrategy = &buildapiv1.DockerBuildStrategy{
-				DockerfilePath: filepath.Base(f.Name()),
-			}
+			build.Spec.Strategy.DockerStrategy = &buildapiv1.DockerBuildStrategy{DockerfilePath: filepath.Base(f.Name())}
 			if test.from != nil {
 				build.Spec.Strategy.DockerStrategy.From = test.from
 			}
@@ -498,10 +258,7 @@ func Test_addBuildParameters(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			got := want{
-				Err: testErr != nil,
-				Out: string(out),
-			}
+			got := want{Err: testErr != nil, Out: string(out)}
 			extra := "ENV \"OPENSHIFT_BUILD_NAME\"=\"\" \"OPENSHIFT_BUILD_NAMESPACE\"=\"\"\nLABEL \"io.openshift.build.name\"=\"\" \"io.openshift.build.namespace\"=\"\"\n"
 			test.want.Out += extra
 			if !reflect.DeepEqual(test.want, got) {
@@ -510,96 +267,48 @@ func Test_addBuildParameters(t *testing.T) {
 		})
 	}
 }
-
 func Test_findReferencedImages(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	type want struct {
-		Images []string
-		Err    bool
+		Images	[]string
+		Err	bool
 	}
 	tests := []struct {
-		original string
-		want     want
-	}{
-		{
-			original: `# no FROM instruction`,
-			want: want{
-				Images: []string{},
-			},
-		},
-		{
-			original: heredoc.Doc(`
+		original	string
+		want		want
+	}{{original: `# no FROM instruction`, want: want{Images: []string{}}}, {original: heredoc.Doc(`
 				FROM scratch
 				# FROM busybox
 				RUN echo "hello world"
-				`),
-			want: want{
-				Images: []string{"scratch"},
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`), want: want{Images: []string{"scratch"}}}, {original: heredoc.Doc(`
 				FROM scratch
 				FROM busybox
 				RUN echo "hello world"
-				`),
-			want: want{
-				Images: []string{"busybox", "scratch"},
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`), want: want{Images: []string{"busybox", "scratch"}}}, {original: heredoc.Doc(`
 				FROM scratch as test
 				FROM busybox
 				RUN echo "hello world"
-				`),
-			want: want{
-				Images: []string{"busybox", "scratch"},
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`), want: want{Images: []string{"busybox", "scratch"}}}, {original: heredoc.Doc(`
 				FROM scratch as test
 				FROM busybox
 				COPY --from=test /a /b
 				COPY --from=nginx /a /c
 				COPY --from=nginx:latest /a /c
 				RUN echo "hello world"
-				`),
-			want: want{
-				Images: []string{"busybox", "nginx", "nginx:latest", "scratch"},
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`), want: want{Images: []string{"busybox", "nginx", "nginx:latest", "scratch"}}}, {original: heredoc.Doc(`
 				FROM scratch as test
 				COPY --from=test:latest /a /b
-				`),
-			want: want{
-				Images: []string{"scratch", "test:latest"},
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`), want: want{Images: []string{"scratch", "test:latest"}}}, {original: heredoc.Doc(`
 				FROM scratch as test
 				FROM other
 				COPY --from=test /a /b
-				`),
-			want: want{
-				Images: []string{"other", "scratch"},
-			},
-		},
-		{
-			original: heredoc.Doc(`
+				`), want: want{Images: []string{"other", "scratch"}}}, {original: heredoc.Doc(`
 				FROM other
 				COPY --from=test /a /b
 				FROM scratch as test
 				COPY --from=test /a /b
-				`),
-			want: want{
-				Images: []string{"other", "scratch", "test"},
-			},
-		},
-	}
+				`), want: want{Images: []string{"other", "scratch", "test"}}}}
 	for i, test := range tests {
 		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
 			f, err := ioutil.TempFile("", "builder-dockertest")
@@ -616,10 +325,7 @@ func Test_findReferencedImages(t *testing.T) {
 				t.Fatal(err)
 			}
 			images, err := findReferencedImages(f.Name())
-			got := want{
-				Images: images,
-				Err:    err != nil,
-			}
+			got := want{Images: images, Err: err != nil}
 			if !reflect.DeepEqual(test.want, got) {
 				t.Errorf("unexpected: %s", diff.ObjectReflectDiff(test.want, got))
 			}

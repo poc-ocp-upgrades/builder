@@ -5,55 +5,36 @@ import (
 	"reflect"
 	"strings"
 	"testing"
-
 	"github.com/docker/docker/builder/dockerfile/command"
 )
 
-// TestWrite tests calling Write with multiple
-// valid inputs.
 func TestWrite(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	testCases := map[string]struct {
-		in   string
-		want string
-	}{
-		"empty input": {
-			in:   ``,
-			want: ``,
-		},
-		"only comments": {
-			in: `# This is a comment
+		in	string
+		want	string
+	}{"empty input": {in: ``, want: ``}, "only comments": {in: `# This is a comment
 # and this is another comment
-	# while this is an indented comment`,
-			want: ``,
-		},
-		"simple Dockerfile": {
-			in: `FROM scratch
+	# while this is an indented comment`, want: ``}, "simple Dockerfile": {in: `FROM scratch
 LABEL version=1.0
 FROM busybox
 ENV PATH=/bin
-`,
-			want: `FROM scratch
+`, want: `FROM scratch
 LABEL version=1.0
 FROM busybox
 ENV PATH=/bin
-`,
-		},
-		"Dockerfile with comments": {
-			in: `# This is a Dockerfile
+`}, "Dockerfile with comments": {in: `# This is a Dockerfile
 FROM scratch
 LABEL version=1.0
 # Here we start building a second image
 FROM busybox
 ENV PATH=/bin
-`,
-			want: `FROM scratch
+`, want: `FROM scratch
 LABEL version=1.0
 FROM busybox
 ENV PATH=/bin
-`,
-		},
-		"all Dockerfile instructions": {
-			in: `FROM busybox:latest
+`}, "all Dockerfile instructions": {in: `FROM busybox:latest
 MAINTAINER nobody@example.com
 ONBUILD ADD . /app/src
 ONBUILD RUN echo "Hello universe!"
@@ -70,8 +51,7 @@ ENTRYPOINT /bin/sh
 CMD ["-c", "env"]
 USER 1001
 WORKDIR /home
-`,
-			want: `FROM busybox:latest
+`, want: `FROM busybox:latest
 MAINTAINER nobody@example.com
 ONBUILD ADD . /app/src
 ONBUILD RUN echo "Hello universe!"
@@ -88,9 +68,7 @@ ENTRYPOINT /bin/sh
 CMD ["-c","env"]
 USER 1001
 WORKDIR /home
-`,
-		},
-	}
+`}}
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			node, err := Parse(strings.NewReader(tc.in))
@@ -105,18 +83,17 @@ WORKDIR /home
 		})
 	}
 }
-
-// TestParseTreeToDockerfileNilNode tests calling ParseTreeToDockerfile with a
-// nil *parser.Node.
 func TestParseTreeToDockerfileNilNode(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	got := Write(nil)
 	if got != nil {
 		t.Errorf("Write(nil) = %#v; want nil", got)
 	}
 }
-
-// TestFindAll tests calling FindAll with multiple values of cmd.
 func TestFindAll(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	instructions := `FROM scratch
 LABEL version=1.0
 FROM busybox
@@ -126,89 +103,51 @@ ENV PATH=/bin
 	if err != nil {
 		t.Fatalf("parse error: %v", err)
 	}
-	for cmd, want := range map[string][]int{
-		command.From:       {0, 2},
-		command.Label:      {1},
-		command.Env:        {3},
-		command.Maintainer: nil,
-		"UnknownCommand":   nil,
-	} {
+	for cmd, want := range map[string][]int{command.From: {0, 2}, command.Label: {1}, command.Env: {3}, command.Maintainer: nil, "UnknownCommand": nil} {
 		got := FindAll(node, cmd)
 		if !reflect.DeepEqual(got, want) {
 			t.Errorf("FindAll(node, %q) = %#v; want %#v", cmd, got, want)
 		}
 	}
 }
-
-// TestFindAllNilNode tests calling FindAll with a nil *parser.Node.
 func TestFindAllNilNode(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	cmd := command.From
 	got := FindAll(nil, cmd)
 	if got != nil {
 		t.Errorf("FindAll(nil, %q) = %#v; want nil", cmd, got)
 	}
 }
-
-// TestInsertInstructions tests calling InsertInstructions with multiple valid
-// combinations of input.
 func TestInsertInstructions(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	testCases := map[string]struct {
-		original        string
-		index           int
-		newInstructions string
-		want            string
-	}{
-		"insert nothing": {
-			original: `FROM busybox
+		original	string
+		index		int
+		newInstructions	string
+		want		string
+	}{"insert nothing": {original: `FROM busybox
 ENV PATH=/bin
-`,
-			index:           0,
-			newInstructions: ``,
-			want: `FROM busybox
+`, index: 0, newInstructions: ``, want: `FROM busybox
 ENV PATH=/bin
-`,
-		},
-		"insert instruction in empty file": {
-			original:        ``,
-			index:           0,
-			newInstructions: `FROM busybox`,
-			want: `FROM busybox
-`,
-		},
-		"prepend single instruction": {
-			original: `FROM busybox
+`}, "insert instruction in empty file": {original: ``, index: 0, newInstructions: `FROM busybox`, want: `FROM busybox
+`}, "prepend single instruction": {original: `FROM busybox
 ENV PATH=/bin
-`,
-			index:           0,
-			newInstructions: `FROM scratch`,
-			want: `FROM scratch
+`, index: 0, newInstructions: `FROM scratch`, want: `FROM scratch
 FROM busybox
 ENV PATH=/bin
-`,
-		},
-		"append single instruction": {
-			original: `FROM busybox
+`}, "append single instruction": {original: `FROM busybox
 ENV PATH=/bin
-`,
-			index:           2,
-			newInstructions: `FROM scratch`,
-			want: `FROM busybox
+`, index: 2, newInstructions: `FROM scratch`, want: `FROM busybox
 ENV PATH=/bin
 FROM scratch
-`,
-		},
-		"insert single instruction in the middle": {
-			original: `FROM busybox
+`}, "insert single instruction in the middle": {original: `FROM busybox
 ENV PATH=/bin
-`,
-			index:           1,
-			newInstructions: `LABEL version=1.0`,
-			want: `FROM busybox
+`, index: 1, newInstructions: `LABEL version=1.0`, want: `FROM busybox
 LABEL version=1.0
 ENV PATH=/bin
-`,
-		},
-	}
+`}}
 	for name, tc := range testCases {
 		got, err := Parse(strings.NewReader(tc.original))
 		if err != nil {
@@ -230,19 +169,17 @@ ENV PATH=/bin
 		}
 	}
 }
-
-// TestInsertInstructionsNilNode tests calling InsertInstructions with a nil
-// *parser.Node.
 func TestInsertInstructionsNilNode(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	err := InsertInstructions(nil, 0, "")
 	if err == nil {
 		t.Errorf("InsertInstructions: got nil; want error")
 	}
 }
-
-// TestInsertInstructionsPosOutOfRange tests calling InsertInstructions with
-// invalid values for the pos argument.
 func TestInsertInstructionsPosOutOfRange(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	original := `FROM busybox
 ENV PATH=/bin
 `
@@ -257,10 +194,9 @@ ENV PATH=/bin
 		}
 	}
 }
-
-// TestInsertInstructionsUnparseable tests calling InsertInstructions with
-// instructions that the Docker parser cannot handle.
 func TestInsertInstructionsUnparseable(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	original := `FROM busybox
 ENV PATH=/bin
 `
@@ -268,43 +204,22 @@ ENV PATH=/bin
 	if err != nil {
 		t.Fatalf("parse error: %v", err)
 	}
-	for name, instructions := range map[string]string{
-		"env without value": `ENV PATH`,
-		"nested json":       `CMD [ "echo", [ "nested json" ] ]`,
-	} {
+	for name, instructions := range map[string]string{"env without value": `ENV PATH`, "nested json": `CMD [ "echo", [ "nested json" ] ]`} {
 		err = InsertInstructions(node, 1, instructions)
 		if err == nil {
 			t.Errorf("InsertInstructions: %s: got nil; want error", name)
 		}
 	}
 }
-
-// TestBaseImages tests calling baseImages with multiple valid combinations of
-// input.
 func TestBaseImages(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	testCases := map[string]struct {
-		in   string
-		want []string
-	}{
-		"empty Dockerfile": {
-			in:   ``,
-			want: nil,
-		},
-		"FROM missing argument": {
-			in:   `FROM`,
-			want: nil,
-		},
-		"single FROM": {
-			in:   `FROM centos:7`,
-			want: []string{"centos:7"},
-		},
-		"multiple FROM": {
-			in: `FROM scratch
+		in	string
+		want	[]string
+	}{"empty Dockerfile": {in: ``, want: nil}, "FROM missing argument": {in: `FROM`, want: nil}, "single FROM": {in: `FROM centos:7`, want: []string{"centos:7"}}, "multiple FROM": {in: `FROM scratch
 COPY . /boot
-FROM centos:7`,
-			want: []string{"scratch", "centos:7"},
-		},
-	}
+FROM centos:7`, want: []string{"scratch", "centos:7"}}}
 	for name, tc := range testCases {
 		node, err := Parse(strings.NewReader(tc.in))
 		if err != nil {
@@ -317,40 +232,21 @@ FROM centos:7`,
 		}
 	}
 }
-
-// TestBaseImagesNilNode tests calling baseImages with a nil *parser.Node.
 func TestBaseImagesNilNode(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if got := baseImages(nil); got != nil {
 		t.Errorf("baseImages(nil) = %#v; want nil", got)
 	}
 }
-
-// TestExposedPorts tests calling exposedPorts with multiple valid combinations
-// of input.
 func TestExposedPorts(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	testCases := map[string]struct {
-		in   string
-		want [][]string
-	}{
-		"empty Dockerfile": {
-			in:   ``,
-			want: nil,
-		},
-		"EXPOSE missing argument": {
-			in:   `EXPOSE`,
-			want: nil,
-		},
-		"EXPOSE no FROM": {
-			in:   `EXPOSE 8080`,
-			want: nil,
-		},
-		"single EXPOSE after FROM": {
-			in: `FROM centos:7
-		EXPOSE 8080`,
-			want: [][]string{{"8080"}},
-		},
-		"multiple EXPOSE and FROM": {
-			in: `# EXPOSE before FROM should be ignore
+		in	string
+		want	[][]string
+	}{"empty Dockerfile": {in: ``, want: nil}, "EXPOSE missing argument": {in: `EXPOSE`, want: nil}, "EXPOSE no FROM": {in: `EXPOSE 8080`, want: nil}, "single EXPOSE after FROM": {in: `FROM centos:7
+		EXPOSE 8080`, want: [][]string{{"8080"}}}, "multiple EXPOSE and FROM": {in: `# EXPOSE before FROM should be ignore
 EXPOSE 777
 FROM busybox
 EXPOSE 8080
@@ -360,10 +256,7 @@ FROM rhel
 FROM centos:7
 EXPOSE 8000
 EXPOSE 9090 9091
-`,
-			want: [][]string{{"8080"}, nil, {"8000", "9090", "9091"}},
-		},
-	}
+`, want: [][]string{{"8080"}, nil, {"8000", "9090", "9091"}}}}
 	for name, tc := range testCases {
 		node, err := Parse(strings.NewReader(tc.in))
 		if err != nil {
@@ -376,32 +269,17 @@ EXPOSE 9090 9091
 		}
 	}
 }
-
-// TestExposedPortsNilNode tests calling exposedPorts with a nil *parser.Node.
 func TestExposedPortsNilNode(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if got := exposedPorts(nil); got != nil {
 		t.Errorf("exposedPorts(nil) = %#v; want nil", got)
 	}
 }
-
-// TestNextValues tests calling nextValues with multiple valid combinations of
-// input.
 func TestNextValues(t *testing.T) {
-	testCases := map[string][]string{
-		`FROM busybox:latest`:           {"busybox:latest"},
-		`MAINTAINER nobody@example.com`: {"nobody@example.com"},
-		`LABEL version=1.0`:             {"version", "1.0"},
-		`EXPOSE 8080`:                   {"8080"},
-		`VOLUME /var/run/www`:           {"/var/run/www"},
-		`ENV PATH=/bin`:                 {"PATH", "/bin"},
-		`ADD file /home/`:               {"file", "/home/"},
-		`COPY dir/ /tmp/`:               {"dir/", "/tmp/"},
-		`RUN echo "Hello world!"`:       {`echo "Hello world!"`},
-		`ENTRYPOINT /bin/sh`:            {"/bin/sh"},
-		`CMD ["-c", "env"]`:             {"-c", "env"},
-		`USER 1001`:                     {"1001"},
-		`WORKDIR /home`:                 {"/home"},
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	testCases := map[string][]string{`FROM busybox:latest`: {"busybox:latest"}, `MAINTAINER nobody@example.com`: {"nobody@example.com"}, `LABEL version=1.0`: {"version", "1.0"}, `EXPOSE 8080`: {"8080"}, `VOLUME /var/run/www`: {"/var/run/www"}, `ENV PATH=/bin`: {"PATH", "/bin"}, `ADD file /home/`: {"file", "/home/"}, `COPY dir/ /tmp/`: {"dir/", "/tmp/"}, `RUN echo "Hello world!"`: {`echo "Hello world!"`}, `ENTRYPOINT /bin/sh`: {"/bin/sh"}, `CMD ["-c", "env"]`: {"-c", "env"}, `USER 1001`: {"1001"}, `WORKDIR /home`: {"/home"}}
 	for original, want := range testCases {
 		node, err := Parse(strings.NewReader(original))
 		if err != nil {
@@ -410,23 +288,16 @@ func TestNextValues(t *testing.T) {
 		if len(node.Children) != 1 {
 			t.Fatalf("unexpected number of children in test case: %s", original)
 		}
-		// The Docker parser always wrap instructions in a root node.
-		// Look at the node representing the first instruction, the one
-		// and only one in each test case.
 		node = node.Children[0]
 		if got := nextValues(node); !reflect.DeepEqual(got, want) {
 			t.Errorf("nextValues(%+v) = %#v; want %#v", node, got, want)
 		}
 	}
 }
-
-// TestNextValuesOnbuild tests calling nextValues with ONBUILD instructions as
-// input.
 func TestNextValuesOnbuild(t *testing.T) {
-	testCases := map[string][]string{
-		`ONBUILD ADD . /app/src`:             {".", "/app/src"},
-		`ONBUILD RUN echo "Hello universe!"`: {`echo "Hello universe!"`},
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	testCases := map[string][]string{`ONBUILD ADD . /app/src`: {".", "/app/src"}, `ONBUILD RUN echo "Hello universe!"`: {`echo "Hello universe!"`}}
 	for original, want := range testCases {
 		node, err := Parse(strings.NewReader(original))
 		if err != nil {
@@ -435,9 +306,6 @@ func TestNextValuesOnbuild(t *testing.T) {
 		if len(node.Children) != 1 {
 			t.Fatalf("unexpected number of children in test case: %s", original)
 		}
-		// The Docker parser always wrap instructions in a root node.
-		// Look at the node representing the instruction following
-		// ONBUILD, the one and only one in each test case.
 		node = node.Children[0].Next
 		if node == nil || len(node.Children) != 1 {
 			t.Fatalf("unexpected number of children in ONBUILD instruction of test case: %s", original)
@@ -448,9 +316,9 @@ func TestNextValuesOnbuild(t *testing.T) {
 		}
 	}
 }
-
-// TestNextValuesNilNode tests calling nextValues with a nil *parser.Node.
 func TestNextValuesNilNode(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if got := nextValues(nil); got != nil {
 		t.Errorf("nextValues(nil) = %#v; want nil", got)
 	}

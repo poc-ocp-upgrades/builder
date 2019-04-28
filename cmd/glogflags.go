@@ -2,13 +2,13 @@ package main
 
 import (
 	"flag"
-
 	"github.com/golang/glog"
 	"github.com/spf13/pflag"
 )
 
-// GLog binds the log flags from the default Google "flag" package into a pflag.FlagSet.
 func GLog(flags *pflag.FlagSet) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	from := flag.CommandLine
 	if flag := from.Lookup("v"); flag != nil {
 		level := flag.Value.(*glog.Level)
@@ -28,10 +28,10 @@ func GLog(flags *pflag.FlagSet) {
 	}
 }
 
-type pflagValue struct {
-	flag.Value
-}
+type pflagValue struct{ flag.Value }
 
 func (pflagValue) Type() string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return "string"
 }
