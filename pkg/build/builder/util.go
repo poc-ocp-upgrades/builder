@@ -8,34 +8,26 @@ import (
 	"os"
 	"regexp"
 	"strings"
-
 	docker "github.com/fsouza/go-dockerclient"
 	s2iapi "github.com/openshift/source-to-image/pkg/api"
 	s2iutil "github.com/openshift/source-to-image/pkg/util"
-
 	buildapiv1 "github.com/openshift/api/build/v1"
 	builderutil "github.com/openshift/builder/pkg/build/builder/util"
 )
 
-// Mount paths for certificate authorities
 const (
-	ConfigMapCertsMountPath = "/var/run/configs/openshift.io/certs"
-	SecretCertsMountPath    = "/var/run/secrets/kubernetes.io/serviceaccount"
+	ConfigMapCertsMountPath	= "/var/run/configs/openshift.io/certs"
+	SecretCertsMountPath	= "/var/run/secrets/kubernetes.io/serviceaccount"
 )
 
 var (
-	// procCGroupPattern is a regular expression that parses the entries in /proc/self/cgroup
-	procCGroupPattern = regexp.MustCompile(`\d+:([a-z_,]+):/.*/(\w+-|)([a-z0-9]+).*`)
-
-	// ClientTypeUnknown is an error returned when we can't figure out
-	// which type of "client" we're using.
-	ClientTypeUnknown = errors.New("internal error: method not implemented for this client type")
+	procCGroupPattern	= regexp.MustCompile(`\d+:([a-z_,]+):/.*/(\w+-|)([a-z0-9]+).*`)
+	ClientTypeUnknown	= errors.New("internal error: method not implemented for this client type")
 )
 
-// MergeEnv will take an existing environment and merge it with a new set of
-// variables. For variables with the same name in both, only the one in the
-// new environment will be kept.
 func MergeEnv(oldEnv, newEnv []string) []string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	key := func(e string) string {
 		i := strings.Index(e, "=")
 		if i == -1 {
@@ -57,9 +49,9 @@ func MergeEnv(oldEnv, newEnv []string) []string {
 	}
 	return result
 }
-
 func reportPushFailure(err error, authPresent bool, pushAuthConfig docker.AuthConfiguration) error {
-	// write extended error message to assist in problem resolution
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if authPresent {
 		glog.V(0).Infof("Registry server Address: %s", pushAuthConfig.ServerAddress)
 		glog.V(0).Infof("Registry server User Name: %s", pushAuthConfig.Username)
@@ -72,17 +64,15 @@ func reportPushFailure(err error, authPresent bool, pushAuthConfig docker.AuthCo
 	}
 	return fmt.Errorf("Failed to push image: %v", err)
 }
-
-// addBuildLabels adds some common image labels describing the build that produced
-// this image.
 func addBuildLabels(labels map[string]string, build *buildapiv1.Build) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	labels[builderutil.DefaultDockerLabelNamespace+"build.name"] = build.Name
 	labels[builderutil.DefaultDockerLabelNamespace+"build.namespace"] = build.Namespace
 }
-
-// SafeForLoggingEnvironmentList returns a copy of an s2i EnvironmentList array with
-// proxy credential values redacted.
 func SafeForLoggingEnvironmentList(env s2iapi.EnvironmentList) s2iapi.EnvironmentList {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	newEnv := make(s2iapi.EnvironmentList, len(env))
 	copy(newEnv, env)
 	proxyRegex := regexp.MustCompile("(?i)proxy")
@@ -93,10 +83,9 @@ func SafeForLoggingEnvironmentList(env s2iapi.EnvironmentList) s2iapi.Environmen
 	}
 	return newEnv
 }
-
-// SafeForLoggingS2IConfig returns a copy of an s2i Config with
-// proxy credentials redacted.
 func SafeForLoggingS2IConfig(config *s2iapi.Config) *s2iapi.Config {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	newConfig := *config
 	newConfig.Environment = SafeForLoggingEnvironmentList(config.Environment)
 	if config.ScriptDownloadProxyConfig != nil {
@@ -105,7 +94,6 @@ func SafeForLoggingS2IConfig(config *s2iapi.Config) *s2iapi.Config {
 		if newConfig.ScriptDownloadProxyConfig.HTTPProxy != nil {
 			newConfig.ScriptDownloadProxyConfig.HTTPProxy = builderutil.SafeForLoggingURL(newConfig.ScriptDownloadProxyConfig.HTTPProxy)
 		}
-
 		if newConfig.ScriptDownloadProxyConfig.HTTPProxy != nil {
 			newConfig.ScriptDownloadProxyConfig.HTTPSProxy = builderutil.SafeForLoggingURL(newConfig.ScriptDownloadProxyConfig.HTTPProxy)
 		}
@@ -113,15 +101,14 @@ func SafeForLoggingS2IConfig(config *s2iapi.Config) *s2iapi.Config {
 	newConfig.ScriptsURL, _ = s2iutil.SafeForLoggingURL(newConfig.ScriptsURL)
 	return &newConfig
 }
-
-// ReadLines reads the content of the given file into a string slice
 func ReadLines(fileName string) ([]string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	file, err := os.Open(fileName)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
-
 	scanner := bufio.NewScanner(file)
 	var lines []string
 	for scanner.Scan() {
@@ -129,23 +116,14 @@ func ReadLines(fileName string) ([]string, error) {
 	}
 	return lines, scanner.Err()
 }
-
-// ParseProxyURL parses a proxy URL and allows fallback to non-URLs like
-// myproxy:80 (for example) which url.Parse no longer accepts in Go 1.8.  The
-// logic is copied from net/http.ProxyFromEnvironment to try to maintain
-// backwards compatibility.
 func ParseProxyURL(proxy string) (*url.URL, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	proxyURL, err := url.Parse(proxy)
-
-	// logic copied from net/http.ProxyFromEnvironment
 	if err != nil || !strings.HasPrefix(proxyURL.Scheme, "http") {
-		// proxy was bogus. Try prepending "http://" to it and see if that
-		// parses correctly. If not, we fall through and complain about the
-		// original one.
 		if proxyURL, err := url.Parse("http://" + proxy); err == nil {
 			return proxyURL, nil
 		}
 	}
-
 	return proxyURL, err
 }

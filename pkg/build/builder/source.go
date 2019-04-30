@@ -11,68 +11,50 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-
-	//"github.com/sirupsen/logrus"
 	realglog "github.com/golang/glog"
-
 	"github.com/containers/image/pkg/docker/config"
 	"github.com/containers/image/types"
 	"github.com/containers/storage"
 	docker "github.com/fsouza/go-dockerclient"
-
-	//"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/containers/buildah"
-
 	s2igit "github.com/openshift/source-to-image/pkg/scm/git"
-	//	s2ifs "github.com/openshift/source-to-image/pkg/util/fs"
-
 	buildapiv1 "github.com/openshift/api/build/v1"
 	"github.com/openshift/builder/pkg/build/builder/cmd/dockercfg"
 	"github.com/openshift/builder/pkg/build/builder/timing"
 	"github.com/openshift/library-go/pkg/git"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 const (
-	// initialURLCheckTimeout is the initial timeout used to check the
-	// source URL.  If fetching the URL exceeds the timeout, then a longer
-	// timeout will be tried until the fetch either succeeds or the build
-	// itself times out.
-	initialURLCheckTimeout = 16 * time.Second
-
-	// timeoutIncrementFactor is the factor to use when increasing
-	// the timeout after each unsuccessful try
-	timeoutIncrementFactor = 4
+	initialURLCheckTimeout	= 16 * time.Second
+	timeoutIncrementFactor	= 4
 )
 
 type gitAuthError string
 type gitNotFoundError string
 
 func (e gitAuthError) Error() string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return fmt.Sprintf("failed to fetch requested repository %q with provided credentials", string(e))
 }
-
 func (e gitNotFoundError) Error() string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return fmt.Sprintf("requested repository %q not found", string(e))
 }
-
-// GitClone clones the source associated with a build(if any) into the specified directory
 func GitClone(ctx context.Context, gitClient GitClient, gitSource *buildapiv1.GitBuildSource, revision *buildapiv1.SourceRevision, dir string) (*git.SourceInfo, error) {
-
-	// It is possible for the initcontainer to get restarted, thus we must wipe out the directory if it already exists.
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	err := os.RemoveAll(dir)
 	if err != nil {
 		return nil, err
 	}
 	os.MkdirAll(dir, 0777)
-
 	hasGitSource, err := extractGitSource(ctx, gitClient, gitSource, revision, dir, initialURLCheckTimeout)
-
 	if err != nil {
 		return nil, err
 	}
-
 	var sourceInfo *git.SourceInfo
 	if hasGitSource {
 		var errs []error
@@ -97,18 +79,11 @@ func GitClone(ctx context.Context, gitClient GitClient, gitSource *buildapiv1.Gi
 	}
 	return sourceInfo, nil
 }
-
-// ManageDockerfile manipulates the dockerfile for docker builds.
-// It will write the inline dockerfile to the working directory (possibly
-// overwriting an existing dockerfile) and then update the dockerfile
-// in the working directory (accounting for contextdir+dockerfilepath)
-// with new FROM image information based on the imagestream/imagetrigger
-// and also adds some env and label values to the dockerfile based on
-// the build information.
 func ManageDockerfile(dir string, build *buildapiv1.Build) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	os.MkdirAll(dir, 0777)
 	glog.V(5).Infof("Checking for presence of a Dockerfile")
-	// a Dockerfile has been specified, create or overwrite into the destination
 	if dockerfileSource := build.Spec.Source.Dockerfile; dockerfileSource != nil {
 		baseDir := dir
 		if len(build.Spec.Source.ContextDir) != 0 {
@@ -118,9 +93,6 @@ func ManageDockerfile(dir string, build *buildapiv1.Build) error {
 			return err
 		}
 	}
-
-	// We only mutate the dockerfile if this is a docker strategy build, otherwise
-	// we leave it as it was provided.
 	if build.Spec.Strategy.DockerStrategy != nil {
 		sourceInfo, err := readSourceInfo()
 		if err != nil {
@@ -130,8 +102,9 @@ func ManageDockerfile(dir string, build *buildapiv1.Build) error {
 	}
 	return nil
 }
-
 func ExtractImageContent(ctx context.Context, dockerClient DockerClient, store storage.Store, dir string, build *buildapiv1.Build, blobCacheDirectory string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	os.MkdirAll(dir, 0777)
 	forcePull := false
 	switch {
@@ -142,7 +115,6 @@ func ExtractImageContent(ctx context.Context, dockerClient DockerClient, store s
 	case build.Spec.Strategy.CustomStrategy != nil:
 		forcePull = build.Spec.Strategy.CustomStrategy.ForcePull
 	}
-	// extract source from an Image if specified
 	for i, image := range build.Spec.Source.Images {
 		if len(image.Paths) == 0 {
 			continue
@@ -158,20 +130,14 @@ func ExtractImageContent(ctx context.Context, dockerClient DockerClient, store s
 	}
 	return nil
 }
-
-// checkRemoteGit validates the specified Git URL. It returns GitNotFoundError
-// when the remote repository not found and GitAuthenticationError when the
-// remote repository failed to authenticate.
-// Since this is calling the 'git' binary, the proxy settings should be
-// available for this command.
 func checkRemoteGit(gitClient GitClient, url string, initialTimeout time.Duration) error {
-
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var (
-		out    string
-		errOut string
-		err    error
+		out	string
+		errOut	string
+		err	error
 	)
-
 	timeout := initialTimeout
 	for {
 		glog.V(4).Infof("git ls-remote --heads %s", url)
@@ -202,30 +168,26 @@ func checkRemoteGit(gitClient GitClient, url string, initialTimeout time.Duratio
 	}
 	return err
 }
-
-// checkSourceURI performs a check on the URI associated with the build
-// to make sure that it is valid.
 func checkSourceURI(gitClient GitClient, rawurl string, timeout time.Duration) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_, err := s2igit.Parse(rawurl)
 	if err != nil {
 		return fmt.Errorf("Invalid git source url %q: %v", rawurl, err)
 	}
 	return checkRemoteGit(gitClient, rawurl, timeout)
 }
-
-// ExtractInputBinary processes the provided input stream as directed by BinaryBuildSource
-// into dir.
 func ExtractInputBinary(in io.Reader, source *buildapiv1.BinaryBuildSource, dir string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	os.MkdirAll(dir, 0777)
 	if source == nil {
 		return nil
 	}
-
 	var path string
 	if len(source.AsFile) > 0 {
 		glog.V(0).Infof("Receiving source from STDIN as file %s", source.AsFile)
 		path = filepath.Join(dir, source.AsFile)
-
 		f, err := os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0664)
 		if err != nil {
 			return err
@@ -238,14 +200,11 @@ func ExtractInputBinary(in io.Reader, source *buildapiv1.BinaryBuildSource, dir 
 		glog.V(4).Infof("Received %d bytes into %s", n, path)
 		return nil
 	}
-
 	glog.V(0).Infof("Receiving source from STDIN as archive ...")
-
 	args := []string{"-x", "-o", "-m", "-f", "-", "-C", dir}
 	if glog.Is(6) {
 		args = append(args, "-v")
 	}
-
 	cmd := exec.Command("bsdtar", args...)
 	cmd.Stdin = in
 	out, err := cmd.CombinedOutput()
@@ -253,36 +212,26 @@ func ExtractInputBinary(in io.Reader, source *buildapiv1.BinaryBuildSource, dir 
 	if err != nil {
 		return fmt.Errorf("unable to extract binary build input, must be a zip, tar, or gzipped tar, or specified as a file: %v", err)
 	}
-
 	return nil
 }
-
 func extractGitSource(ctx context.Context, gitClient GitClient, gitSource *buildapiv1.GitBuildSource, revision *buildapiv1.SourceRevision, dir string, timeout time.Duration) (bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if gitSource == nil {
 		return false, nil
 	}
-
 	glog.V(0).Infof("Cloning %q ...", gitSource.URI)
-
-	// Check source URI by trying to connect to the server
 	if err := checkSourceURI(gitClient, gitSource.URI, timeout); err != nil {
 		return true, err
 	}
-
 	cloneOptions := []string{}
 	usingRevision := revision != nil && revision.Git != nil && len(revision.Git.Commit) != 0
 	usingRef := len(gitSource.Ref) != 0 || usingRevision
-
-	// check if we specify a commit, ref, or branch to check out
-	// Recursive clone if we're not going to checkout a ref and submodule update later
 	if !usingRef {
 		cloneOptions = append(cloneOptions, "--recursive")
 		cloneOptions = append(cloneOptions, git.Shallow)
 	}
-
 	glog.V(3).Infof("Cloning source from %s", gitSource.URI)
-
-	// Only use the quiet flag if Verbosity is not 5 or greater
 	if !glog.Is(5) {
 		cloneOptions = append(cloneOptions, "--quiet")
 	}
@@ -290,41 +239,32 @@ func extractGitSource(ctx context.Context, gitClient GitClient, gitSource *build
 	if err := gitClient.CloneWithOptions(dir, gitSource.URI, cloneOptions...); err != nil {
 		return true, err
 	}
-
 	timing.RecordNewStep(ctx, buildapiv1.StageFetchInputs, buildapiv1.StepFetchGitSource, startTime, metav1.Now())
-
-	// if we specify a commit, ref, or branch to checkout, do so, and update submodules
 	if usingRef {
 		commit := gitSource.Ref
-
 		if usingRevision {
 			commit = revision.Git.Commit
 		}
-
 		if err := gitClient.Checkout(dir, commit); err != nil {
 			err = gitClient.PotentialPRRetryAsFetch(dir, gitSource.URI, commit, err)
 			if err != nil {
 				return true, err
 			}
 		}
-
-		// Recursively update --init
 		if err := gitClient.SubmoduleUpdate(dir, true, true); err != nil {
 			return true, err
 		}
 	}
-
 	if information, gitErr := gitClient.GetInfo(dir); len(gitErr) == 0 {
 		glog.Infof("\tCommit:\t%s (%s)\n", information.CommitID, information.Message)
 		glog.Infof("\tAuthor:\t%s <%s>\n", information.AuthorName, information.AuthorEmail)
 		glog.Infof("\tDate:\t%s\n", information.Date)
 	}
-
 	return true, nil
 }
-
 func copyImageSourceFromFilesytem(sourceDir, destDir string) error {
-	// Setup destination directory
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	fi, err := os.Stat(destDir)
 	if err != nil {
 		if !os.IsNotExist(err) {
@@ -340,7 +280,6 @@ func copyImageSourceFromFilesytem(sourceDir, destDir string) error {
 			return fmt.Errorf("destination %s must be a directory", destDir)
 		}
 	}
-
 	args := []string{"-r"}
 	if glog.Is(5) {
 		args = append(args, "-v")
@@ -353,24 +292,14 @@ func copyImageSourceFromFilesytem(sourceDir, destDir string) error {
 	}
 	return nil
 }
-
 func extractSourceFromImage(ctx context.Context, dockerClient DockerClient, store storage.Store, image, buildDir string, imageSecretIndex int, paths []buildapiv1.ImageSourcePath, forcePull bool, blobCacheDirectory string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	glog.V(4).Infof("Extracting image source from image %s", image)
-
 	pullPolicy := buildah.PullIfMissing
 	if forcePull {
 		pullPolicy = buildah.PullAlways
 	}
-
-	/*
-		storeOptions := storage.DefaultStoreOptions
-		storeOptions.GraphDriverName = "overlay"
-		store, err := storage.GetStore(storeOptions)
-		if err != nil {
-			return err
-		}
-	*/
-
 	var auths *docker.AuthConfigurations
 	var err error
 	if imageSecretIndex != -1 {
@@ -382,14 +311,10 @@ func extractSourceFromImage(ctx context.Context, dockerClient DockerClient, stor
 			}
 		}
 	}
-
 	var systemContext types.SystemContext
 	systemContext.AuthFilePath = "/tmp/config.json"
-
-	// TODO remove this, get CAs+insecure registry config from host.
 	systemContext.OCIInsecureSkipTLSVerify = true
 	systemContext.DockerInsecureSkipTLSVerify = types.NewOptionalBool(true)
-
 	if auths != nil {
 		for registry, ac := range auths.Configs {
 			glog.V(5).Infof("Setting authentication for registry %q using %q.", registry, ac.ServerAddress)
@@ -401,20 +326,11 @@ func extractSourceFromImage(ctx context.Context, dockerClient DockerClient, stor
 			}
 		}
 	}
-
-	builderOptions := buildah.BuilderOptions{
-		FromImage:       image,
-		PullPolicy:      pullPolicy,
-		ReportWriter:    os.Stdout,
-		SystemContext:   &systemContext,
-		CommonBuildOpts: &buildah.CommonBuildOptions{},
-	}
-
+	builderOptions := buildah.BuilderOptions{FromImage: image, PullPolicy: pullPolicy, ReportWriter: os.Stdout, SystemContext: &systemContext, CommonBuildOpts: &buildah.CommonBuildOptions{}}
 	builder, err := buildah.NewBuilder(ctx, store, builderOptions)
 	if err != nil {
 		return fmt.Errorf("error creating buildah builder: %v", err)
 	}
-
 	mountPath, err := builder.Mount("")
 	defer func() {
 		err := builder.Unmount()
@@ -425,12 +341,8 @@ func extractSourceFromImage(ctx context.Context, dockerClient DockerClient, stor
 	if err != nil {
 		return fmt.Errorf("error mounting image content from image %s: %v", image, err)
 	}
-
 	for _, path := range paths {
 		destPath := filepath.Join(buildDir, path.DestinationDir)
-		// Paths ending with "/." are truncated by filepath.Join
-		// Add it back to preserve copy behavior per docs:
-		// https://docs.okd.io/latest/dev_guide/builds/build_inputs.html#image-source
 		sourcePath := filepath.Join(mountPath, path.SourcePath)
 		if strings.HasSuffix(path.SourcePath, "/.") {
 			sourcePath = sourcePath + "/."
@@ -441,6 +353,5 @@ func extractSourceFromImage(ctx context.Context, dockerClient DockerClient, stor
 			return fmt.Errorf("error copying source path %s to %s: %v", path.SourcePath, path.DestinationDir, err)
 		}
 	}
-
 	return nil
 }
